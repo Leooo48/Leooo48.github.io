@@ -1,0 +1,16 @@
+---
+title: CTex生成中文pdf复制乱码解决办法
+date: 2017-07-11 12:00:00
+categories:
+- CTEX
+---
+
+用CTeX的CJK包生成的pdf，如果直接复制内容，再粘贴为文本文档的话，会出现乱码。解决办法很简单，加入以下包：
+
+```
+\usepackage{ccmap}
+```
+
+搞定...
+
+ccmap 是使用 PDFLaTeX 处理 CJK 中文文档时的内码修正

@@ -1,0 +1,405 @@
+---
+title: 数据结构之链表总结
+date: 2017-08-19 15:07:40
+---
+
+本文参考自[hackbuteer1的博客](http://blog.csdn.net/hackbuteer1/article/details/6591486/)。
+
+#### 链表定义
+
+链表是一种常见的重要数据结构，它可以动态地进行存储分配，根据需要开辟内存单元。链表有一个**“头指针”**变量，以`head`表示，它存放一个地址，该地址指向一个元素。链表中每一个元素称为“结点”，每个结点都包括两个部分：一为数据，二为下一个结点的地址。
+
+因此，`head`指向第一个元素，第一个元素又指向第二个元素，……，直到最后一个元素，该元素不再指向其它元素，为“表尾”，它的地址部分放一个“NULL”（表示“空地址”），链表到此结束。
+
+**单向链表**是常见的链表结构，各类操作包括：创建、删除、插入（无序、有序）、输出、  排序（选择、插入、冒泡）、反序等。
+
+**双向链表**是链表的另一种常见结构，每个节点包含三部分：一为数据，二为前一个结点地址，三为下一个结点地址。双向链表的各类操作与单向链表的类似，只要搞清楚链表结点之间的指向关系可以了。
+
+**链表判空** 带表头结点的链表判空条件为`head->next==NULL`。
+
+#### 链表创建
+
+空链表只包含一个`head`指针，内容为NULL。创建n个结点的链表函数为：
+```
+#include "stdlib.h"  
+#include "stdio.h"  
+  
+#define NULL 0  
+#define LEN sizeof(struct student)  
+  
+struct student  
+{  
+    int num;              //学号   
+    float score;          //分数，其他信息可以继续在下面增加字段  
+    struct student *next; //指向下一节点的指针  
+};  
+  
+int n;  //节点总数   
+/* 
+========================== 
+功能：创建n个节点的链表 
+返回：指向链表表头的指针 
+========================== 
+*/  
+struct student *Create()  
+{  
+    struct student *head;       //头节点  
+    struct student *p1 = NULL;  //p1保存创建的新节点的地址  
+    struct student *p2 = NULL;  //p2保存原链表最后一个节点的地址  
+  
+    n = 0;          //创建前链表的节点总数为0：空链表  
+    p1 = (struct student *) malloc (LEN);   //开辟一个新节点  
+      
+    if(p1==NULL)        //节点开辟不成功  
+    {  
+        printf ("\nCann't create it, try it again in a moment!\n");  
+        return NULL;  
+    }  
+    else                //节点开辟成功  
+    {  
+        p2 = p1;            //p2先把p1的指针保存下来以备后用  
+        head = NULL;        //开始head指向NULL  
+        printf ("Please input %d node -- num,score: ", n + 1);  
+        scanf ("%d %f", &(p1->num), &(p1->score));    //录入数据  
+    } 
+
+    while(p1->num != 0)      //只要学号不为0，就继续录入下一个节点  
+    {  
+        n += 1;         //节点总数增加1个  
+        if(n == 1)      //如果节点总数是1，则head指向刚创建的节点p1  
+        {  
+            head = p1;  
+            p2->next = NULL;  //此时的p2就是p1,也就是p1->next指向NULL。  
+        }  
+        else  
+        {  
+            p2->next = p1;   //指向上次下面刚刚开辟的新节点  
+        }  
+  
+        p2 = p1;            //把p1的地址给p2保留，然后p1产生新的节点  
+  
+        p1 = (struct student *) malloc (LEN);  
+        printf ("Please input %d node -- num,score: ", n + 1);  
+        scanf ("%d %f", &(p1->num), &(p1->score));  
+    }  
+    p2->next = NULL;     //此句就是根据单向链表的最后一个节点要指向NULL  
+  
+    free(p1);           //p1->num为0的时候跳出了while循环，并且释放p1  
+    p1 = NULL;          //经free释放的指针要置为NULL，否则会变成野指针
+    return head;        //返回创建链表的头指针   
+}
+```
+输出链表中的每个节点内容的函数：
+```
+void Print(struct student *head)  
+{  
+    struct student *p;  
+    p = head;  
+    if(head != NULL)        //只要不是空链表，就输出链表中所有节点  
+    {  
+        printf("head is %o\n", head);    //输出头指针指向的地址  
+        while(p != NULL)  
+        {  
+            printf ("%o %d %5.1f %o\n", p, p->num, p->score, p->next);  
+            p = p->next;     //移到下一个节点  
+        }  
+    }  
+}  
+```
+
+#### 链表中元素删除
+
+1. 如果只有一个结点，则`head->next=NULL`即可
+2. 如果不止一个结点（假设结点为1、2、3），要删除2结点，则`1->next=2->next`即可。
+
+删除指定结点的程序如下：
+```
+struct student *Del (struct student *head, int num)  
+{  
+    struct student *p1;     //p1正在检查结点的地址  
+    struct student *p2;     //p2已检查过结点的地址  
+    
+    if (head == NULL)       //是空链表
+    {  
+        printf ("\nList is null!\n");  
+        return head;  
+    }  
+  
+    //定位要删除的节点  
+    p1 = head;  
+    while (p1->num != num && p1->next != NULL)//不是目标结点且不为尾结点 
+    {  
+        p2 = p1;         //保存当前节点的地址  
+        p1 = p1->next;   //后移一个节点  
+    }  
+  
+    if(p1->num==num)     //找到目标结点  
+    {  
+        if (p1 == head)     //如果要删除的节点是第一个节点  
+        {  
+            head = p1->next; //头指针指向第一个节点的后一个节点，也就是第二个节点。这样第一个节点就不在链表中，即删除  
+        }  
+        else //如果是其它节点，则让原来指向当前节点的指针，指向它的下一个节点，完成删除  
+        {  
+            p2->next = p1->next;  
+        }  
+  
+        free (p1);
+        p1 = NULL; 
+        printf ("\ndelete %ld success!\n", num);  
+        n -= 1;         //节点总数减1个  
+    }  
+    else                //没有找到  
+    {  
+        printf ("\n%ld not been found!\n", num);  
+    }  
+  
+    return head;  
+}  
+```
+
+#### 链表中指定位置插入结点
+
+如只有一个head结点，直接`head=node; node->next=NULL;`即可。若不知一个结点（假设结点为1、3），在1、3结点之间插入2结点，只需`2->next=1->next; 1->next=2;`。
+插入结点程序如下：
+```
+struct student *Insert (struct student *head, int num, struct student *node) 
+{  
+    struct student *p1;     //p1保存当前需要检查的节点的地址  
+
+    if (head == NULL) 
+        head = node;  
+        node->next = NULL;  
+        n += 1;  
+        return head;  
+    }  
+  
+    p1 = head;  
+    while(p1->num != num && p1->next != NULL)  //p1指向的节点不是所要查找的，并且它不是最后一个节点，继续往下找  
+    {  
+        p1 = p1->next;       //后移一个节点  
+    }  
+  
+    if (p1->num==num)        //找到了（结合图示8理解）  
+    {  
+        node->next = p1->next;    //显然node的下一节点是原p1的next  
+        p1->next = node;     //插入后，原p1的下一节点就是要插入的node  
+        n += 1;         //节点总数增加1个  
+    }  
+    else  
+    {  
+        printf ("\n%ld not been found!\n", num);  
+    }  
+    return head;  
+}
+```
+
+#### 单向链表反序
+
+新建一个空链表，每从原链表读取一个结点，就插入到新链表的`head`处，直到原链表读取完毕。
+单向链表反序的程序如下：
+```
+struct student *Reverse (struct student *head)
+{
+    struct student *p1;
+    struct student *p2;
+    struct student *p;
+
+    p1=head;
+    p2=NULL;
+
+    while(p1!=NULL)
+    {
+        if(p1 == head)
+        {
+            p2=p1;
+            p2->next=NULL;
+        }
+        else
+        {
+            p=p2;
+            p2=p1;
+            p2->next=p;
+        }
+
+        p1=p1->next;
+    }
+
+    head=p2;
+    return head;
+}
+```
+
+#### 链表排序
+
+链表排序就是用常用的排序算法进行，根据链表可以动态创建与修改的特性实现。
+
+##### 选择排序
+
+1. 在原链表中找最小的，找到之后把它放在一个空的新链表中
+2. 接着在原链表中找次小的，放在新链表的末尾，依次执行直到原链表没有元素比当前最小值大，结束排序
+3. 从大到小排序同理
+
+链表选择排序的程序如下：
+```
+struct student *SelectSort (struct student *head)
+{
+    struct student *p;//遍历寻找最小值的指针
+    struct student *pre_min;//最小值结点的前一个结点指针
+    struct student *min;//最小值结点
+    struct student *new;//新的有序链表的头指针
+    struct student *tail;//新的有序链表的尾指针
+
+    new = NULL;
+
+    while(head != NULL)
+    {
+        for (p = head, min = head; p->next != NULL; p = p->next)//循环遍历链表中的节点，找出此时最小的节点
+        {
+            if (p->next->num < min->num)
+            {
+                min = p->next;
+                pre_min = p;
+            }
+        }
+
+        if (new == NULL) 
+        {
+            new = min;
+            new->next = NULL;
+            tail = new;
+        }
+        else
+        {
+            tail->next = min;
+            tail = min;
+        }
+
+        if(min == head)
+        {
+            head = head->next;
+        }
+        else
+        {
+            pre_min->next = min->next;
+        }
+    }
+
+    if(new != NULL) tail->next = NULL;
+
+    head = new;
+    return head;
+}
+```
+
+##### 链表直接插入排序
+
+从第二个结点开始，依次读取，插入到前面已经排序好的链表合适位置。
+直接插入排序函数如下：
+```
+struct student *InsertSort(struct student *head)
+{
+    struct student *first; //为原链表剩下用于直接插入排序的节点头指针
+    struct student *t;     //临时指针变量：插入节点
+    struct student *p,*q;  //临时指针变量
+
+    first = head->next; //原链表剩下用于直接插入排序的节点链表
+    head->next = NULL; //只含有一个节点的链表的有序链表
+
+    while(first != NULL)        //遍历剩下无序的链表
+    {
+        for (t = first, q = head; ((q != NULL) && (q->num < t->num)); p = q, q = q->next);  //无序节点在有序链表中找插入的位置
+        
+        first = first->next;
+
+        if (q == head)      //插在第一个节点之前
+        {
+            head = t;
+        }
+        else            //p是q的前驱
+        {
+            p->next = t;
+        }
+        t->next = q;        //完成插入动作
+    }
+    return head;
+}
+```
+
+##### 链表冒泡排序
+
+```
+struct student *BubbleSort (struct student *head)
+{
+    struct student *endpt;    //控制循环比较
+    struct student *p;        //临时指针变量
+    struct student *p1,*p2;
+
+    p1 = (struct student *) malloc (LEN);
+    p1->next = head;
+    head = p1; //让head指向p1节点，排序完成后，我们再把p1节点释放掉
+
+    for (endpt = NULL; endpt != head; endpt = p)    //结合第6点理解
+    {
+        for (p = p1 = head; p1->next->next != endpt; p1 = p1->next)
+        {
+            if (p1->next->num > p1->next->next->num)    //如果前面的节点键值比后面节点的键值大，则交换
+            {
+                p2 = p1->next->next;      //结合第1点理解
+                p1->next->next = p2->next;    //结合第2点理解
+                p2->next = p1->next;     //结合第3点理解
+                p1->next = p2;    //结合第4点理解
+                p = p1->next->next; //结合第6点理解
+            }
+        }
+    }
+
+    p1 = head;              //把p1的信息去掉
+    head = head->next;      //让head指向排序后的第一个节点
+    free (p1);          //释放p1
+    p1 = NULL;          //p1置为NULL，保证不产生“野指针”
+
+    return head;
+}
+```
+
+#### 插入有序链表
+
+```
+struct student *SortInsert (struct student *head, struct student *node)
+{
+    struct student *p;      //p保存当前需要检查的节点的地址
+    struct student *t;      //临时指针变量
+
+    if (head == NULL)       //处理空的有序链表
+    {
+        head = node;
+        node->next = NULL;
+        n += 1;         //插入完毕，节点总数加
+        return head;
+    }
+
+    p = head;             //有序链表不为空
+    while(p->num < node->num && p != NULL)     //p指向的节点的学号比插入节点的学号小，并且它不等于NULL
+    {
+        t = p;            //保存当前节点的前驱，以便后面判断后处理
+        p = p->next;        //后移一个节点
+    }
+
+    if (p == head)      //刚好插入第一个节点之前
+    {
+        node->next = p;
+        head = node;
+    }
+    else                 //插入其它节点之后
+    {
+        t->next = node;     //把node节点加进去
+        node->next = p;
+    }
+    n += 1;         //插入完毕，节点总数加1
+
+    return head;
+}
+```
+
+至此链表的常用操作函数与实现方法已总结完毕，完整的测试程序见[hackbuteer1的博客](http://blog.csdn.net/hackbuteer1/article/details/6591486/)。

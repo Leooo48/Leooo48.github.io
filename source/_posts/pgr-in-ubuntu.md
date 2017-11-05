@@ -1,0 +1,50 @@
+---
+title: ubuntu下PointGrey相机配置
+date: 2017-08-17 17:29:55
+categories: 
+- Ubuntu
+---
+
+PointGrey相机在Ubuntu 14.04 64位 + ROS indigo的SDK安装及驱动配置教程。
+
+从PointGrey下载对应相机型号的驱动，注意系统的版本。Ubuntu的驱动下有安装脚本.sh文件。
+
+复制到/home/#yourusername#/目录下，按照Readme中的流程，先安装依赖项，再运行安装脚本。
+
+> sudo apt-get install libraw1394-11 libgtkmm-2.4-1c2a libglademm-2.4-1c2a libgtkglextmm-x11-1.2-dev libgtkglextmm-x11-1.2 libusb-1.0-0 libglademm-2.4-dev
+
+> sudo sh install_flycapture.sh
+
+安装好之后，新建一个ROS package，修改CMakeLists.txt：
+
+> 新加`set( FLYCAPTURE_INCLUDE_DIRS /usr/include/flycapture)`
+> 新加
+```
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+  ${FLYCAPTURE_INCLUDE_DIRS}
+)
+```
+> 新加
+```
+add_executable(node src/*.cpp)
+target_link_libraries(node ${catkin_LIBRARIES} flycapture)
+```
+
+修改好之后就可以编写驱动程序了，本人程序稍后上传github。
+
+开启FlyCapture的客户端命令为`sudo flycap`，不加`sudo`无法读取到相机插入的信息，因此可知，读取usb需要提升权限。这部分参考[链接](https://answers.ros.org/question/48244/unable-to-get-point-grey-usb-camera-work-in-ubuntu/)。
+
+```
+lsusb //查看你的pointgrey相机的usb地址是多少，一般是1e10:xxxx格式的
+sudo gedit /etc/udev/rules.d/10-pointgrey.rules
+SUBSYSTEM=="usb", ATTRS{idVendor}=="1e10", ATTRS{idProduct}=="xxxx", GROUP="plugdev", SYMLINK+="chameleon(or firewire)", MODE:="0666"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="1e10", ATTRS{idProduct}=="xxxx", GROUP="plugdev", SYMLINK+="chameleon(or firewire)", MODE:="0666"
+...
+```
+
+之后就可以了。
+
+目前还有一个问题始终无法解决，手头有两台不同型号的pointgrey相机，一台可以正常采集一台不行，一运行就显示Segment fault， core dumped。解决后更新解决方案。
+
+

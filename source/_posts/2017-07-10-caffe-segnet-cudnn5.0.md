@@ -1,0 +1,19 @@
+---
+title: caffe-segnet-cudnn5.0
+date: 2017-07-11 12:00:00
+categories:
+- Caffe
+---
+
+[Github地址](https://github.com/TimoSaemann/caffe-segnet-cudnn5)
+
+编译：
+
+```
+cd $CAFFE_SEGNET_CUDNN5
+make all -j12
+
+cd build
+cmake ..
+make -j12
+```
