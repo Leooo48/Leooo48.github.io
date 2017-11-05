@@ -244,7 +244,6 @@ print('all txts has converted into xmls')
 我使用的是faster_rcnn_end2end.sh进行训练。需要调整的文件有：
 
 1. ./lib/datasets/pascal_voc.py
-
 ```
 # line 30
 self._classes = ('__background__', 'car') # always index 0
@@ -270,7 +269,6 @@ y1 = float(bbox.find('ymin').text) #- 1
 x2 = float(bbox.find('xmax').text) #- 1
 y2 = float(bbox.find('ymax').text) #- 1
 ```
-
 2. ./lib/datasets/imdb.py
 ```
 # line 102
@@ -294,17 +292,11 @@ def append_flipped_images(self): #modfied
         self.roidb.append(entry)
     self._image_index = self._image_index * 2
 ```
-
 3. ./models/pascal_voc/VGG_CNN_M_1024/faster_rcnn_end2end/train.protxt
-
 修改类别为你需要检测类别数目，例如我检测车辆和背景，则将类别数21改为2
-
 4. ./models/pascal_voc/VGG_CNN_M_1024/faster_rcnn_end2end/test.protxt
-
 修改类别为你需要检测类别数目，例如我检测车辆和背景，则将类别数21改为2
-
 5. ./experiments/scripts/faster_rcnn_end2end.sh
-
 修改line 53的finetune模型
 
 # 开始训练

@@ -306,4 +306,4 @@ def append_flipped_images(self): #modfied
 ./experiments/scripts/faster_rcnn_end2end.sh 0 VGG_CNN_M_1024 pascal_voc
 ```
 
-训练结果在./output文件夹中。
+训练结果在./output文件夹中，可直接使用。
