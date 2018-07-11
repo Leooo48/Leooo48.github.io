@@ -2,7 +2,7 @@
 title: 机器学习-特征选择与稀疏学习
 date: 2017-07-11 12:00:00
 categories: 
-- MachineLearning
+- 机器学习
 ---
 
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>

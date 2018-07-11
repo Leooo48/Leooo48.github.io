@@ -2,7 +2,7 @@
 title: hexo+github搭建个人博客并实现多端更新
 date: 2017-07-12 10:46:16
 categories: 
-- Ubuntu
+- 实用教程
 ---
 
 本教程使用Hexo在ubuntu 14.04下创建博客，并实现win10 x64同步更新。
