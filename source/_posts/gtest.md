@@ -80,28 +80,13 @@ int main(int argc, char **argv) {
 修改CMakeLists.txt，在合适的地方加入：
 
 ```
-find_package(GTest REQUIRED)
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-  ${GTEST_INCLUDE_DIRS}
-)
-
-catkin_add_gtest(test_node test/test.cpp src/foo.cpp)
-target_link_libraries(test_node ${catkin_LIBRARIES})
+add_executable(test_node test/test.cpp src/foo.cpp)
+target_link_libraries(test_node ${catkin_LIBRARIES} gtest)
 ```
 
 # 编译运行test node
 
 用`catkin_make`编译，`rosrun`开始运行测试节点。
-
-还可以把运行写入launch文件中
-
-```
-<launch>
-  <node pkg="mypkg" type="mynode" name="mynode" />
-  <test test-name="test_node" pkg="mypkg" type="test_node" />
-</launch>
-```
 
 # gtest断言
 
