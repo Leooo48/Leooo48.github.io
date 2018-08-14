@@ -55,6 +55,26 @@ int main(int argc, char **argv) {
 }
 ```
 
+不带注释版code：
+
+```
+#include <ros/ros.h>
+#include <gtest/gtest.h>
+
+TEST(TestSuite, testCase1) {
+  ASSERT_*;
+}
+
+int main(int argc, char **argv) {
+  testing::GTEST_FLAG(output) = "xml:/home/jd/";
+  testing::InitGoogleTest(&argc, argv);
+  ros::init(argc, argv, "test_node");
+  ros::NodeHandle nh;
+
+  return RUN_ALL_TESTS();
+}
+```
+
 # 编写CMakeLists.txt
 
 修改CMakeLists.txt，在合适的地方加入：
