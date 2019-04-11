@@ -2,7 +2,7 @@
 title: 机器学习模型的评估与选择
 date: 2018-02-10 21:17:06
 categories: 
-- MachineLearning
+- 机器学习
 ---
 
 

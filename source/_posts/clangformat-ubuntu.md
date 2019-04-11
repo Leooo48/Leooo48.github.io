@@ -9,7 +9,8 @@ Clangformat可以很方便的调整代码风格，规范代码格式。在Sublim
 
 #### Step 1
 
-- Sublime中，Ctrl+Shift+P打开搜索框，输入pcip，点击Package Control: Install Package
+- Sublime中，手动安装[Package Control](https://packagecontrol.io/installation)
+- Ctrl+Shift+P打开搜索框，输入pcip，点击Package Control: Install Package
 - 输入clang，选择clangformat
 - 等待安装完毕
 

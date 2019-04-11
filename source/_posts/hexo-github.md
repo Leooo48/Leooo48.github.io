@@ -5,11 +5,11 @@ categories:
 - 实用教程
 ---
 
-本教程使用Hexo在ubuntu 14.04下创建博客，并实现win10 x64同步更新。
+本教程使用Hexo在Ubuntu下创建博客，并实现win10 x64同步更新。
 
 ### Step 1. 创建博客
 
-在ubuntu 14.04系统创建博客的Hexo教程很多，号称30分钟搭建个人博客。实际过程中遇到无数的坑，无数次卸载重装。最终的解决方案参考[ZL的博客](https://github.com/MasterIzumi/tricks/blob/master/blog_on_github.md)。
+解决方案参考[ZL的博客](https://github.com/MasterIzumi/tricks/blob/master/blog_on_github.md)。
 
 #### 1. 安装Nodejs
 
@@ -19,7 +19,12 @@ sudo apt-get install nodejs-legacy
 sudo apt-get install npm
 ```
 
-以上命令按顺序装，否则会出错。
+Ubuntu自带源nodejs版本较旧，更新nodejs版本
+
+```
+sudo npm install n -g
+sudo n stable
+```
 
 #### 2. 安装Hexo
 
@@ -32,14 +37,14 @@ sudo npm install hexo-cli -g
 ```
 mkdir blog
 cd blog
-sudo hexo init
+hexo init
 ```
 
 #### 4. 生成并查看博客。主题是默认主题，若一切正常，浏览器输入127.0.0.1即可显示HelloWorld的博客。
 
 ```
-sudo hexo g # generate webpage
-sudo hexo s # run local server
+hexo g # generate webpage
+hexo s # run local server
 ```
 
 每次修改完之后可以使用` sudo hexo s `指令进行本地查看。
@@ -49,7 +54,7 @@ sudo hexo s # run local server
 Hexo具有丰富的主题可供选择，如Next主题：
 
 ```
-sudo hexo clean
+hexo clean
 cd themes
 git clone https://github.com/iissnan/hexo-theme-next.git
 ```
@@ -57,8 +62,8 @@ git clone https://github.com/iissnan/hexo-theme-next.git
 主题配置通过修改主题文件夹里面_config.yml文件，然后更新博客：
 
 ```
-sudo hexo g # generate webpage
-sudo hexo s # run local server
+hexo g # generate webpage
+hexo s # run local server
 ```
 
 主题配置参考[NexT：http://theme-next.iissnan.com/getting-started.html](http://theme-next.iissnan.com/getting-started.html)。
@@ -86,9 +91,9 @@ deploy:
 #### 4. 重新更新博客：
 
 ```
-sudo hexo clean
-sudo hexo g
-sudo hexo d
+hexo clean
+hexo g
+hexo d
 ```
 
 部署完成后，打开网页进行查看，网址是yourname.github.io。
@@ -144,7 +149,18 @@ npm install hexo-cli -g
 npm install
 ```
 
-### Step 5. 更新博客的流程
+### Step 5. 在其他Ubuntu机器上配置多端更新
+
+将当前系统的ssh公钥添加到GitHub的列表中。如果当前系统未生成过公钥，则运行`ssh-keygen -t rsa`，然后将`.ssh`文件夹下的`.pub`文件中的公钥添加到GitHub的列表中。
+
+```
+git clone -b hexo git@github.com:yourname/yourname.github.io.git
+cd yourname.github.io
+
+npm install hexo --save
+```
+
+### Step 6. 更新博客的流程
 
 ```
 cd blog
@@ -156,5 +172,3 @@ git push origin hexo
 hexo g
 hexo d
 ```
-
-> 配置hexo折腾了大概一天半的时间，不过配好之后的使用体验和博客美观程度相当好，比之前博客好太多了，还是很值得的。最重要的是一定要按照步骤一步步来，千万不要自作聪明，否则会踩很多坑。

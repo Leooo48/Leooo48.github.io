@@ -1,6 +1,8 @@
 ---
 title: 基于CaffeNet完成的一个车辆朝向检测网络
 date: 2017-11-20 11:42:44
+categories:
+- Caffe
 ---
 
 本文是基于caffe自带的caffenet网络，采用KITTI数据集完成的一个车辆朝向检测网络。
