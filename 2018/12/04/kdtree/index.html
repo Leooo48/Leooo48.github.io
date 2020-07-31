@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="通过激光雷达获取的点云数据，具有数据量大、分布不均匀等特点。作为三维领域中一个重要的数据来源，点云主要是表征目标表面的海量点的集合，并不具备传统网格数据的几何拓扑信息，所以点云数据处理中最为核心的问题就是建立离散点间的拓扑关系，实现基于邻域关系的快速查找。 kd-tree（k-dimensional tree），是一种分割k维数据空间的数据结构，主要应用于多维空间关键数据的搜索（如：范围搜索和最近">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kd-tree理论及应用">
+<meta property="og:url" content="http://Leooo48.github.io/2018/12/04/kdtree/index.html">
+<meta property="og:site_name" content="Leo&#39;s Blog">
+<meta property="og:description" content="通过激光雷达获取的点云数据，具有数据量大、分布不均匀等特点。作为三维领域中一个重要的数据来源，点云主要是表征目标表面的海量点的集合，并不具备传统网格数据的几何拓扑信息，所以点云数据处理中最为核心的问题就是建立离散点间的拓扑关系，实现基于邻域关系的快速查找。 kd-tree（k-dimensional tree），是一种分割k维数据空间的数据结构，主要应用于多维空间关键数据的搜索（如：范围搜索和最近">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://raw.githubusercontent.com/Leooo48/markdownimages/master/p1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Leooo48/markdownimages/master/p2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Leooo48/markdownimages/master/p3.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Leooo48/markdownimages/master/p4.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Leooo48/markdownimages/master/p5.png">
+<meta property="og:updated_time" content="2020-07-31T06:18:08.404Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="kd-tree理论及应用">
+<meta name="twitter:description" content="通过激光雷达获取的点云数据，具有数据量大、分布不均匀等特点。作为三维领域中一个重要的数据来源，点云主要是表征目标表面的海量点的集合，并不具备传统网格数据的几何拓扑信息，所以点云数据处理中最为核心的问题就是建立离散点间的拓扑关系，实现基于邻域关系的快速查找。 kd-tree（k-dimensional tree），是一种分割k维数据空间的数据结构，主要应用于多维空间关键数据的搜索（如：范围搜索和最近">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Leooo48/markdownimages/master/p1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://Leooo48.github.io/2018/12/04/kdtree/">
+
+
+
+
+
+  <title>kd-tree理论及应用 | Leo's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Fighting for Life</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://Leooo48.github.io/2018/12/04/kdtree/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="李浩 Leo">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://raw.githubusercontent.com/Leooo48/markdownimages/master/1731554065.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">kd-tree理论及应用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-04T14:52:45+08:00">
+                2018-12-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>通过激光雷达获取的点云数据，具有数据量大、分布不均匀等特点。作为三维领域中一个重要的数据来源，点云主要是表征目标表面的海量点的集合，并不具备传统网格数据的几何拓扑信息，所以点云数据处理中最为核心的问题就是建立离散点间的<strong>拓扑关系</strong>，实现基于邻域关系的<strong>快速查找</strong>。</p>
+<p>kd-tree（k-dimensional tree），是一种分割k维数据空间的数据结构，主要应用于多维空间关键数据的搜索（如：范围搜索和最近邻搜索）。kd-tree是二进制空间分割树的特殊的情况，用来组织表示k维空间中点的拓扑关系，是一种带有其他约束的二分查找树。</p>
+<p>kd-tree算法可以分为两大部分：一部分是有关kd-tree本身这种数据结构建立的算法，另一部分是在建立的kd-tree上如何进行最邻近查找的算法。</p>
+<h1 id="构建算法"><a href="#构建算法" class="headerlink" title="构建算法"></a>构建算法</h1><p>kd-tree是一个二叉树，每个节点表示一个空间范围：</p>
+<blockquote>
+<ul>
+<li>Node-data：数据矢量，数据集中具体的某个数据点，是k维矢量</li>
+<li>Range：空间矢量，该节点所代表的空间范围</li>
+<li>split：整数，垂直于分割超平面的方向轴序号</li>
+<li>Left：kd-tree，由位于该节点分割超平面左子空间内所有数据点所构成的kd-tree</li>
+<li>Right：kd-tree，由位于该节点分割超平面右子空间内所有数据点所构成的kd-tree</li>
+<li>parent：kd-tree，父节点</li>
+</ul>
+</blockquote>
+<p>先以一个简单直观的实例来介绍kd-tree算法。假设有6个二维数据点{（2,3），（5,4），（9,6），（4,7），（8,1），（7,2）}，数据点位于二维空间内。kd-tree算法就是要确定图1中这些分割空间的分割线（多维空间即为分割平面，一般为超平面）。下面就要通过一步步展示kd-tree是如何确定这些分割线的。</p>
+<p><img src="https://raw.githubusercontent.com/Leooo48/markdownimages/master/p1.png" alt></p>
+<p>由于此例简单，数据维度只有2维，所以可以简单地给x，y两个方向轴编号为0,1，也即split={0,1}。</p>
+<p>（1）确定split域的首先该取的值。分别计算x，y方向上数据的方差得知x方向上的方差最大，所以split域值首先取0，也就是x轴方向；</p>
+<p>（2）确定Node-data的域值。根据x轴方向的值2,5,9,4,8,7排序选出中值为7，所以Node-data = （7,2）。这样，该节点的分割超平面就是通过（7,2）并垂直于split = 0（x轴）的直线x = 7；</p>
+<p><img src="https://raw.githubusercontent.com/Leooo48/markdownimages/master/p2.png" alt></p>
+<p>（3）确定左子空间和右子空间。分割超平面x = 7将整个空间分为两部分，如图2所示。x &lt; = 7的部分为左子空间，包含3个节点{（2,3），（5,4），（4,7）}；另一部分为右子空间，包含2个节点{（9,6），（8,1）}。</p>
+<p>（4）kd-tree的构建是一个递归的过程。然后对左子空间和右子空间内的数据重复根节点的过程就可以得到下一级子节点（5,4）和（9,6）（也就是左右子空间的根节点），同时将空间和数据集进一步细分。如此反复直到空间中只包含一个数据点，最后生成的kd-tree如图3所示。</p>
+<p><img src="https://raw.githubusercontent.com/Leooo48/markdownimages/master/p3.png" alt></p>
+<h1 id="搜索算法"><a href="#搜索算法" class="headerlink" title="搜索算法"></a>搜索算法</h1><p>在kd-tree中进行数据的查找也是特征匹配的重要环节，其目的是检索在kd-tree中与查询点距离最近的数据点。这里先以一个简单的实例来描述最邻近查找的基本思路。</p>
+<p><img src="https://raw.githubusercontent.com/Leooo48/markdownimages/master/p4.png" alt></p>
+<p>星号表示要查询的点（2.1,3.1）。通过二叉搜索，顺着搜索路径很快就能找到最邻近的近似点，也就是叶子节点（2,3）。而找到的叶子节点并不一定就是最邻近的，最邻近肯定距离查询点更近。为了找到真正的最近邻，还需要进行回溯操作：算法沿搜索路径反向查找是否有距离查询点更近的数据点。</p>
+<p>此例中先从（7,2）点开始进行二叉查找，然后到达（5,4），最后到达（2,3），此时搜索路径中的节点为&lt;（7,2），（5,4），（2,3）&gt;，首先以（2,3）作为当前最近邻点，计算其到查询点（2.1,3.1）的距离为0.1414，然后回溯到其父节点（5,4），并判断在该父节点的其他子节点空间中是否有距离查询点更近的数据点。以（2.1,3.1）为圆心，以0.1414为半径画圆，如图4所示。发现该圆并不和超平面y=4交割，因此不用进入（5,4）节点右子空间中去搜索。</p>
+<h1 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h1><p>PCL中kd_tree模块类KdTree关键成员函数:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">virtual void pcl::KdTree&lt;PointT&gt;::setInputCloud(const PointCloudConstPtr &amp; cloud, const IndicesConstPtr &amp; indices = IndicesConstPtr ())</span><br></pre></td></tr></table></figure>
+<p>作用：设置输入点云，参数cloud作为输入点云的共享指针引用，indices为在kd_tree中使用的点对应的索引，如果不设置，则默认使用整个点云填充kd_tree。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">virtual int pcl::KdTree&lt;PointT&gt;::nearestKSearch(int index, int k, std::vector&lt;int&gt;&amp; k_indices, std::vector&lt;float&gt; &amp; k_sqr_distances)</span><br></pre></td></tr></table></figure>
+<p>作用：纯虚函数，具体实现在其子类KdTreeFLANN中，其用来进行k邻域搜索，k_sqr_distances为搜索完成后每个邻域点与查询点的欧式距离。</p>
+<p>应用实例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;pcl/point_cloud.h&gt;        //点类型定义头文件</span><br><span class="line">#include &lt;pcl/kdtree/kdtree_flann.h&gt; //kdtree类定义头文件</span><br><span class="line"></span><br><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;vector&gt;</span><br><span class="line">#include &lt;ctime&gt;</span><br><span class="line"></span><br><span class="line">int</span><br><span class="line">main (int argc, char** argv)</span><br><span class="line">&#123;</span><br><span class="line">  srand (time (NULL));   //用系统时间初始化随机种子</span><br><span class="line">  //创建一个PointCloud&lt;pcl::PointXYZ&gt;</span><br><span class="line">  pcl::PointCloud&lt;pcl::PointXYZ&gt;::Ptr cloud (new pcl::PointCloud&lt;pcl::PointXYZ&gt;);</span><br><span class="line"></span><br><span class="line">  // 随机点云生成</span><br><span class="line">  cloud-&gt;width = 1000;             //此处点云数量</span><br><span class="line">  cloud-&gt;height = 1;                //表示点云为无序点云</span><br><span class="line">  cloud-&gt;points.resize (cloud-&gt;width * cloud-&gt;height);</span><br><span class="line"></span><br><span class="line">  for (size_t i = 0; i &lt; cloud-&gt;points.size (); ++i)   //循环填充点云数据</span><br><span class="line">  &#123;</span><br><span class="line">    cloud-&gt;points[i].x = 1024.0f * rand () / (RAND_MAX + 1.0f);</span><br><span class="line">    cloud-&gt;points[i].y = 1024.0f * rand () / (RAND_MAX + 1.0f);</span><br><span class="line">    cloud-&gt;points[i].z = 1024.0f * rand () / (RAND_MAX + 1.0f);</span><br><span class="line">  &#125;</span><br><span class="line"> //创建KdTreeFLANN对象，并把创建的点云设置为输入,创建一个searchPoint变量作为查询点</span><br><span class="line">  pcl::KdTreeFLANN&lt;pcl::PointXYZ&gt; kdtree;</span><br><span class="line"> //设置搜索空间</span><br><span class="line">  kdtree.setInputCloud (cloud);</span><br><span class="line">  //设置查询点并赋随机值</span><br><span class="line">  pcl::PointXYZ searchPoint;</span><br><span class="line">  searchPoint.x = 1024.0f * rand () / (RAND_MAX + 1.0f);</span><br><span class="line">  searchPoint.y = 1024.0f * rand () / (RAND_MAX + 1.0f);</span><br><span class="line">  searchPoint.z = 1024.0f * rand () / (RAND_MAX + 1.0f);</span><br><span class="line"></span><br><span class="line">  // K 临近搜索</span><br><span class="line">  //创建一个整数（设置为10）和两个向量来存储搜索到的K近邻，两个向量中，一个存储搜索到查询点近邻的索引，另一个存储对应近邻的距离平方</span><br><span class="line">  int K = 10;</span><br><span class="line"></span><br><span class="line">  std::vector&lt;int&gt; pointIdxNKNSearch(K);      //存储查询点近邻索引</span><br><span class="line">  std::vector&lt;float&gt; pointNKNSquaredDistance(K); //存储近邻点对应距离平方</span><br><span class="line">  //打印相关信息</span><br><span class="line">  std::cout &lt;&lt; &quot;K nearest neighbor search at (&quot; &lt;&lt; searchPoint.x </span><br><span class="line">            &lt;&lt; &quot; &quot; &lt;&lt; searchPoint.y </span><br><span class="line">            &lt;&lt; &quot; &quot; &lt;&lt; searchPoint.z</span><br><span class="line">            &lt;&lt; &quot;) with K=&quot; &lt;&lt; K &lt;&lt; std::endl;</span><br><span class="line"></span><br><span class="line">  if ( kdtree.nearestKSearch (searchPoint, K, pointIdxNKNSearch, pointNKNSquaredDistance) &gt; 0 )  //执行K近邻搜索</span><br><span class="line">  &#123;</span><br><span class="line">     //打印所有近邻坐标</span><br><span class="line">    for (size_t i = 0; i &lt; pointIdxNKNSearch.size (); ++i)</span><br><span class="line">      std::cout &lt;&lt; &quot;    &quot;  &lt;&lt;   cloud-&gt;points[ pointIdxNKNSearch[i] ].x </span><br><span class="line">                &lt;&lt; &quot; &quot; &lt;&lt; cloud-&gt;points[ pointIdxNKNSearch[i] ].y </span><br><span class="line">                &lt;&lt; &quot; &quot; &lt;&lt; cloud-&gt;points[ pointIdxNKNSearch[i] ].z </span><br><span class="line">                &lt;&lt; &quot; (squared distance: &quot; &lt;&lt; pointNKNSquaredDistance[i] &lt;&lt; &quot;)&quot; &lt;&lt; std::endl;</span><br><span class="line">  &#125;</span><br><span class="line">  /**********************************************************************************</span><br><span class="line">   下面的代码展示查找到给定的searchPoint的某一半径（随机产生）内所有近邻，重新定义两个向量</span><br><span class="line">   pointIdxRadiusSearch  pointRadiusSquaredDistance来存储关于近邻的信息</span><br><span class="line">   ********************************************************************************/</span><br><span class="line">  // 半径 R内近邻搜索方法</span><br><span class="line"></span><br><span class="line">  std::vector&lt;int&gt; pointIdxRadiusSearch;           //存储近邻索引</span><br><span class="line">  std::vector&lt;float&gt; pointRadiusSquaredDistance;   //存储近邻对应距离的平方</span><br><span class="line"></span><br><span class="line">  float radius = 256.0f * rand () / (RAND_MAX + 1.0f);   //随机的生成某一半径</span><br><span class="line">  //打印输出</span><br><span class="line">  std::cout &lt;&lt; &quot;Neighbors within radius search at (&quot; &lt;&lt; searchPoint.x </span><br><span class="line">            &lt;&lt; &quot; &quot; &lt;&lt; searchPoint.y </span><br><span class="line">            &lt;&lt; &quot; &quot; &lt;&lt; searchPoint.z</span><br><span class="line">            &lt;&lt; &quot;) with radius=&quot; &lt;&lt; radius &lt;&lt; std::endl;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  if ( kdtree.radiusSearch (searchPoint, radius, pointIdxRadiusSearch, pointRadiusSquaredDistance) &gt; 0 )  //执行半径R内近邻搜索方法</span><br><span class="line">  &#123;</span><br><span class="line">    for (size_t i = 0; i &lt; pointIdxRadiusSearch.size (); ++i)</span><br><span class="line">      std::cout &lt;&lt; &quot;    &quot;  &lt;&lt;   cloud-&gt;points[ pointIdxRadiusSearch[i] ].x </span><br><span class="line">                &lt;&lt; &quot; &quot; &lt;&lt; cloud-&gt;points[ pointIdxRadiusSearch[i] ].y </span><br><span class="line">                &lt;&lt; &quot; &quot; &lt;&lt; cloud-&gt;points[ pointIdxRadiusSearch[i] ].z </span><br><span class="line">                &lt;&lt; &quot; (squared distance: &quot; &lt;&lt; pointRadiusSquaredDistance[i] &lt;&lt; &quot;)&quot; &lt;&lt; std::endl;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>结果：<br><img src="https://raw.githubusercontent.com/Leooo48/markdownimages/master/p5.png" alt></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/28/rosbag/" rel="next" title="rosbag中各指令的使用">
+                <i class="fa fa-chevron-left"></i> rosbag中各指令的使用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/02/static-in-class/" rel="prev" title="类中的静态成员">
+                类中的静态成员 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://raw.githubusercontent.com/Leooo48/markdownimages/master/1731554065.jpg" alt="李浩 Leo">
+            
+              <p class="site-author-name" itemprop="name">李浩 Leo</p>
+              <p class="site-description motion-element" itemprop="description">身处安乐之时，莫忘昔日之痛</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#构建算法"><span class="nav-text">构建算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#搜索算法"><span class="nav-text">搜索算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#应用"><span class="nav-text">应用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">李浩 Leo</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

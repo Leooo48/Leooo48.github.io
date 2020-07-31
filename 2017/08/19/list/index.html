@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文参考自hackbuteer1的博客。 链表定义链表是一种常见的重要数据结构，它可以动态地进行存储分配，根据需要开辟内存单元。链表有一个“头指针”变量，以head表示，它存放一个地址，该地址指向一个元素。链表中每一个元素称为“结点”，每个结点都包括两个部分：一为数据，二为下一个结点的地址。 因此，head指向第一个元素，第一个元素又指向第二个元素，……，直到最后一个元素，该元素不再指向其它元素，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构之链表总结">
+<meta property="og:url" content="http://Leooo48.github.io/2017/08/19/list/index.html">
+<meta property="og:site_name" content="Leo&#39;s Blog">
+<meta property="og:description" content="本文参考自hackbuteer1的博客。 链表定义链表是一种常见的重要数据结构，它可以动态地进行存储分配，根据需要开辟内存单元。链表有一个“头指针”变量，以head表示，它存放一个地址，该地址指向一个元素。链表中每一个元素称为“结点”，每个结点都包括两个部分：一为数据，二为下一个结点的地址。 因此，head指向第一个元素，第一个元素又指向第二个元素，……，直到最后一个元素，该元素不再指向其它元素，">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-07-31T06:18:08.404Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据结构之链表总结">
+<meta name="twitter:description" content="本文参考自hackbuteer1的博客。 链表定义链表是一种常见的重要数据结构，它可以动态地进行存储分配，根据需要开辟内存单元。链表有一个“头指针”变量，以head表示，它存放一个地址，该地址指向一个元素。链表中每一个元素称为“结点”，每个结点都包括两个部分：一为数据，二为下一个结点的地址。 因此，head指向第一个元素，第一个元素又指向第二个元素，……，直到最后一个元素，该元素不再指向其它元素，">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://Leooo48.github.io/2017/08/19/list/">
+
+
+
+
+
+  <title>数据结构之链表总结 | Leo's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Fighting for Life</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://Leooo48.github.io/2017/08/19/list/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="李浩 Leo">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://raw.githubusercontent.com/Leooo48/markdownimages/master/1731554065.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">数据结构之链表总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-19T15:07:40+08:00">
+                2017-08-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文参考自<a href="http://blog.csdn.net/hackbuteer1/article/details/6591486/" target="_blank" rel="noopener">hackbuteer1的博客</a>。</p>
+<h4 id="链表定义"><a href="#链表定义" class="headerlink" title="链表定义"></a>链表定义</h4><p>链表是一种常见的重要数据结构，它可以动态地进行存储分配，根据需要开辟内存单元。链表有一个<strong>“头指针”</strong>变量，以<code>head</code>表示，它存放一个地址，该地址指向一个元素。链表中每一个元素称为“结点”，每个结点都包括两个部分：一为数据，二为下一个结点的地址。</p>
+<p>因此，<code>head</code>指向第一个元素，第一个元素又指向第二个元素，……，直到最后一个元素，该元素不再指向其它元素，为“表尾”，它的地址部分放一个“NULL”（表示“空地址”），链表到此结束。</p>
+<p><strong>单向链表</strong>是常见的链表结构，各类操作包括：创建、删除、插入（无序、有序）、输出、  排序（选择、插入、冒泡）、反序等。</p>
+<p><strong>双向链表</strong>是链表的另一种常见结构，每个节点包含三部分：一为数据，二为前一个结点地址，三为下一个结点地址。双向链表的各类操作与单向链表的类似，只要搞清楚链表结点之间的指向关系可以了。</p>
+<p><strong>链表判空</strong> 带表头结点的链表判空条件为<code>head-&gt;next==NULL</code>。</p>
+<h4 id="链表创建"><a href="#链表创建" class="headerlink" title="链表创建"></a>链表创建</h4><p>空链表只包含一个<code>head</code>指针，内容为NULL。创建n个结点的链表函数为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">#include &quot;stdlib.h&quot;  </span><br><span class="line">#include &quot;stdio.h&quot;  </span><br><span class="line">  </span><br><span class="line">#define NULL 0  </span><br><span class="line">#define LEN sizeof(struct student)  </span><br><span class="line">  </span><br><span class="line">struct student  </span><br><span class="line">&#123;  </span><br><span class="line">    int num;              //学号   </span><br><span class="line">    float score;          //分数，其他信息可以继续在下面增加字段  </span><br><span class="line">    struct student *next; //指向下一节点的指针  </span><br><span class="line">&#125;;  </span><br><span class="line">  </span><br><span class="line">int n;  //节点总数   </span><br><span class="line">/* </span><br><span class="line">========================== </span><br><span class="line">功能：创建n个节点的链表 </span><br><span class="line">返回：指向链表表头的指针 </span><br><span class="line">========================== </span><br><span class="line">*/  </span><br><span class="line">struct student *Create()  </span><br><span class="line">&#123;  </span><br><span class="line">    struct student *head;       //头节点  </span><br><span class="line">    struct student *p1 = NULL;  //p1保存创建的新节点的地址  </span><br><span class="line">    struct student *p2 = NULL;  //p2保存原链表最后一个节点的地址  </span><br><span class="line">  </span><br><span class="line">    n = 0;          //创建前链表的节点总数为0：空链表  </span><br><span class="line">    p1 = (struct student *) malloc (LEN);   //开辟一个新节点  </span><br><span class="line">      </span><br><span class="line">    if(p1==NULL)        //节点开辟不成功  </span><br><span class="line">    &#123;  </span><br><span class="line">        printf (&quot;\nCann&apos;t create it, try it again in a moment!\n&quot;);  </span><br><span class="line">        return NULL;  </span><br><span class="line">    &#125;  </span><br><span class="line">    else                //节点开辟成功  </span><br><span class="line">    &#123;  </span><br><span class="line">        p2 = p1;            //p2先把p1的指针保存下来以备后用  </span><br><span class="line">        head = NULL;        //开始head指向NULL  </span><br><span class="line">        printf (&quot;Please input %d node -- num,score: &quot;, n + 1);  </span><br><span class="line">        scanf (&quot;%d %f&quot;, &amp;(p1-&gt;num), &amp;(p1-&gt;score));    //录入数据  </span><br><span class="line">    &#125; </span><br><span class="line"></span><br><span class="line">    while(p1-&gt;num != 0)      //只要学号不为0，就继续录入下一个节点  </span><br><span class="line">    &#123;  </span><br><span class="line">        n += 1;         //节点总数增加1个  </span><br><span class="line">        if(n == 1)      //如果节点总数是1，则head指向刚创建的节点p1  </span><br><span class="line">        &#123;  </span><br><span class="line">            head = p1;  </span><br><span class="line">            p2-&gt;next = NULL;  //此时的p2就是p1,也就是p1-&gt;next指向NULL。  </span><br><span class="line">        &#125;  </span><br><span class="line">        else  </span><br><span class="line">        &#123;  </span><br><span class="line">            p2-&gt;next = p1;   //指向上次下面刚刚开辟的新节点  </span><br><span class="line">        &#125;  </span><br><span class="line">  </span><br><span class="line">        p2 = p1;            //把p1的地址给p2保留，然后p1产生新的节点  </span><br><span class="line">  </span><br><span class="line">        p1 = (struct student *) malloc (LEN);  </span><br><span class="line">        printf (&quot;Please input %d node -- num,score: &quot;, n + 1);  </span><br><span class="line">        scanf (&quot;%d %f&quot;, &amp;(p1-&gt;num), &amp;(p1-&gt;score));  </span><br><span class="line">    &#125;  </span><br><span class="line">    p2-&gt;next = NULL;     //此句就是根据单向链表的最后一个节点要指向NULL  </span><br><span class="line">  </span><br><span class="line">    free(p1);           //p1-&gt;num为0的时候跳出了while循环，并且释放p1  </span><br><span class="line">    p1 = NULL;          //经free释放的指针要置为NULL，否则会变成野指针</span><br><span class="line">    return head;        //返回创建链表的头指针   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>输出链表中的每个节点内容的函数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">void Print(struct student *head)  </span><br><span class="line">&#123;  </span><br><span class="line">    struct student *p;  </span><br><span class="line">    p = head;  </span><br><span class="line">    if(head != NULL)        //只要不是空链表，就输出链表中所有节点  </span><br><span class="line">    &#123;  </span><br><span class="line">        printf(&quot;head is %o\n&quot;, head);    //输出头指针指向的地址  </span><br><span class="line">        while(p != NULL)  </span><br><span class="line">        &#123;  </span><br><span class="line">            printf (&quot;%o %d %5.1f %o\n&quot;, p, p-&gt;num, p-&gt;score, p-&gt;next);  </span><br><span class="line">            p = p-&gt;next;     //移到下一个节点  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="链表中元素删除"><a href="#链表中元素删除" class="headerlink" title="链表中元素删除"></a>链表中元素删除</h4><ol>
+<li>如果只有一个结点，则<code>head-&gt;next=NULL</code>即可</li>
+<li>如果不止一个结点（假设结点为1、2、3），要删除2结点，则<code>1-&gt;next=2-&gt;next</code>即可。</li>
+</ol>
+<p>删除指定结点的程序如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">struct student *Del (struct student *head, int num)  </span><br><span class="line">&#123;  </span><br><span class="line">    struct student *p1;     //p1正在检查结点的地址  </span><br><span class="line">    struct student *p2;     //p2已检查过结点的地址  </span><br><span class="line">    </span><br><span class="line">    if (head == NULL)       //是空链表</span><br><span class="line">    &#123;  </span><br><span class="line">        printf (&quot;\nList is null!\n&quot;);  </span><br><span class="line">        return head;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    //定位要删除的节点  </span><br><span class="line">    p1 = head;  </span><br><span class="line">    while (p1-&gt;num != num &amp;&amp; p1-&gt;next != NULL)//不是目标结点且不为尾结点 </span><br><span class="line">    &#123;  </span><br><span class="line">        p2 = p1;         //保存当前节点的地址  </span><br><span class="line">        p1 = p1-&gt;next;   //后移一个节点  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    if(p1-&gt;num==num)     //找到目标结点  </span><br><span class="line">    &#123;  </span><br><span class="line">        if (p1 == head)     //如果要删除的节点是第一个节点  </span><br><span class="line">        &#123;  </span><br><span class="line">            head = p1-&gt;next; //头指针指向第一个节点的后一个节点，也就是第二个节点。这样第一个节点就不在链表中，即删除  </span><br><span class="line">        &#125;  </span><br><span class="line">        else //如果是其它节点，则让原来指向当前节点的指针，指向它的下一个节点，完成删除  </span><br><span class="line">        &#123;  </span><br><span class="line">            p2-&gt;next = p1-&gt;next;  </span><br><span class="line">        &#125;  </span><br><span class="line">  </span><br><span class="line">        free (p1);</span><br><span class="line">        p1 = NULL; </span><br><span class="line">        printf (&quot;\ndelete %ld success!\n&quot;, num);  </span><br><span class="line">        n -= 1;         //节点总数减1个  </span><br><span class="line">    &#125;  </span><br><span class="line">    else                //没有找到  </span><br><span class="line">    &#123;  </span><br><span class="line">        printf (&quot;\n%ld not been found!\n&quot;, num);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    return head;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="链表中指定位置插入结点"><a href="#链表中指定位置插入结点" class="headerlink" title="链表中指定位置插入结点"></a>链表中指定位置插入结点</h4><p>如只有一个head结点，直接<code>head=node; node-&gt;next=NULL;</code>即可。若不知一个结点（假设结点为1、3），在1、3结点之间插入2结点，只需<code>2-&gt;next=1-&gt;next; 1-&gt;next=2;</code>。<br>插入结点程序如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">struct student *Insert (struct student *head, int num, struct student *node) </span><br><span class="line">&#123;  </span><br><span class="line">    struct student *p1;     //p1保存当前需要检查的节点的地址  </span><br><span class="line"></span><br><span class="line">    if (head == NULL) </span><br><span class="line">        head = node;  </span><br><span class="line">        node-&gt;next = NULL;  </span><br><span class="line">        n += 1;  </span><br><span class="line">        return head;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    p1 = head;  </span><br><span class="line">    while(p1-&gt;num != num &amp;&amp; p1-&gt;next != NULL)  //p1指向的节点不是所要查找的，并且它不是最后一个节点，继续往下找  </span><br><span class="line">    &#123;  </span><br><span class="line">        p1 = p1-&gt;next;       //后移一个节点  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    if (p1-&gt;num==num)        //找到了（结合图示8理解）  </span><br><span class="line">    &#123;  </span><br><span class="line">        node-&gt;next = p1-&gt;next;    //显然node的下一节点是原p1的next  </span><br><span class="line">        p1-&gt;next = node;     //插入后，原p1的下一节点就是要插入的node  </span><br><span class="line">        n += 1;         //节点总数增加1个  </span><br><span class="line">    &#125;  </span><br><span class="line">    else  </span><br><span class="line">    &#123;  </span><br><span class="line">        printf (&quot;\n%ld not been found!\n&quot;, num);  </span><br><span class="line">    &#125;  </span><br><span class="line">    return head;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="单向链表反序"><a href="#单向链表反序" class="headerlink" title="单向链表反序"></a>单向链表反序</h4><p>新建一个空链表，每从原链表读取一个结点，就插入到新链表的<code>head</code>处，直到原链表读取完毕。<br>单向链表反序的程序如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">struct student *Reverse (struct student *head)</span><br><span class="line">&#123;</span><br><span class="line">    struct student *p1;</span><br><span class="line">    struct student *p2;</span><br><span class="line">    struct student *p;</span><br><span class="line"></span><br><span class="line">    p1=head;</span><br><span class="line">    p2=NULL;</span><br><span class="line"></span><br><span class="line">    while(p1!=NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        if(p1 == head)</span><br><span class="line">        &#123;</span><br><span class="line">            p2=p1;</span><br><span class="line">            p2-&gt;next=NULL;</span><br><span class="line">        &#125;</span><br><span class="line">        else</span><br><span class="line">        &#123;</span><br><span class="line">            p=p2;</span><br><span class="line">            p2=p1;</span><br><span class="line">            p2-&gt;next=p;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        p1=p1-&gt;next;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    head=p2;</span><br><span class="line">    return head;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="链表排序"><a href="#链表排序" class="headerlink" title="链表排序"></a>链表排序</h4><p>链表排序就是用常用的排序算法进行，根据链表可以动态创建与修改的特性实现。</p>
+<h5 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h5><ol>
+<li>在原链表中找最小的，找到之后把它放在一个空的新链表中</li>
+<li>接着在原链表中找次小的，放在新链表的末尾，依次执行直到原链表没有元素比当前最小值大，结束排序</li>
+<li>从大到小排序同理</li>
+</ol>
+<p>链表选择排序的程序如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">struct student *SelectSort (struct student *head)</span><br><span class="line">&#123;</span><br><span class="line">    struct student *p;//遍历寻找最小值的指针</span><br><span class="line">    struct student *pre_min;//最小值结点的前一个结点指针</span><br><span class="line">    struct student *min;//最小值结点</span><br><span class="line">    struct student *new;//新的有序链表的头指针</span><br><span class="line">    struct student *tail;//新的有序链表的尾指针</span><br><span class="line"></span><br><span class="line">    new = NULL;</span><br><span class="line"></span><br><span class="line">    while(head != NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        for (p = head, min = head; p-&gt;next != NULL; p = p-&gt;next)//循环遍历链表中的节点，找出此时最小的节点</span><br><span class="line">        &#123;</span><br><span class="line">            if (p-&gt;next-&gt;num &lt; min-&gt;num)</span><br><span class="line">            &#123;</span><br><span class="line">                min = p-&gt;next;</span><br><span class="line">                pre_min = p;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (new == NULL) </span><br><span class="line">        &#123;</span><br><span class="line">            new = min;</span><br><span class="line">            new-&gt;next = NULL;</span><br><span class="line">            tail = new;</span><br><span class="line">        &#125;</span><br><span class="line">        else</span><br><span class="line">        &#123;</span><br><span class="line">            tail-&gt;next = min;</span><br><span class="line">            tail = min;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if(min == head)</span><br><span class="line">        &#123;</span><br><span class="line">            head = head-&gt;next;</span><br><span class="line">        &#125;</span><br><span class="line">        else</span><br><span class="line">        &#123;</span><br><span class="line">            pre_min-&gt;next = min-&gt;next;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if(new != NULL) tail-&gt;next = NULL;</span><br><span class="line"></span><br><span class="line">    head = new;</span><br><span class="line">    return head;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h5 id="链表直接插入排序"><a href="#链表直接插入排序" class="headerlink" title="链表直接插入排序"></a>链表直接插入排序</h5><p>从第二个结点开始，依次读取，插入到前面已经排序好的链表合适位置。<br>直接插入排序函数如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">struct student *InsertSort(struct student *head)</span><br><span class="line">&#123;</span><br><span class="line">    struct student *first; //为原链表剩下用于直接插入排序的节点头指针</span><br><span class="line">    struct student *t;     //临时指针变量：插入节点</span><br><span class="line">    struct student *p,*q;  //临时指针变量</span><br><span class="line"></span><br><span class="line">    first = head-&gt;next; //原链表剩下用于直接插入排序的节点链表</span><br><span class="line">    head-&gt;next = NULL; //只含有一个节点的链表的有序链表</span><br><span class="line"></span><br><span class="line">    while(first != NULL)        //遍历剩下无序的链表</span><br><span class="line">    &#123;</span><br><span class="line">        for (t = first, q = head; ((q != NULL) &amp;&amp; (q-&gt;num &lt; t-&gt;num)); p = q, q = q-&gt;next);  //无序节点在有序链表中找插入的位置</span><br><span class="line">        </span><br><span class="line">        first = first-&gt;next;</span><br><span class="line"></span><br><span class="line">        if (q == head)      //插在第一个节点之前</span><br><span class="line">        &#123;</span><br><span class="line">            head = t;</span><br><span class="line">        &#125;</span><br><span class="line">        else            //p是q的前驱</span><br><span class="line">        &#123;</span><br><span class="line">            p-&gt;next = t;</span><br><span class="line">        &#125;</span><br><span class="line">        t-&gt;next = q;        //完成插入动作</span><br><span class="line">    &#125;</span><br><span class="line">    return head;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h5 id="链表冒泡排序"><a href="#链表冒泡排序" class="headerlink" title="链表冒泡排序"></a>链表冒泡排序</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">struct student *BubbleSort (struct student *head)</span><br><span class="line">&#123;</span><br><span class="line">    struct student *endpt;    //控制循环比较</span><br><span class="line">    struct student *p;        //临时指针变量</span><br><span class="line">    struct student *p1,*p2;</span><br><span class="line"></span><br><span class="line">    p1 = (struct student *) malloc (LEN);</span><br><span class="line">    p1-&gt;next = head;</span><br><span class="line">    head = p1; //让head指向p1节点，排序完成后，我们再把p1节点释放掉</span><br><span class="line"></span><br><span class="line">    for (endpt = NULL; endpt != head; endpt = p)    //结合第6点理解</span><br><span class="line">    &#123;</span><br><span class="line">        for (p = p1 = head; p1-&gt;next-&gt;next != endpt; p1 = p1-&gt;next)</span><br><span class="line">        &#123;</span><br><span class="line">            if (p1-&gt;next-&gt;num &gt; p1-&gt;next-&gt;next-&gt;num)    //如果前面的节点键值比后面节点的键值大，则交换</span><br><span class="line">            &#123;</span><br><span class="line">                p2 = p1-&gt;next-&gt;next;      //结合第1点理解</span><br><span class="line">                p1-&gt;next-&gt;next = p2-&gt;next;    //结合第2点理解</span><br><span class="line">                p2-&gt;next = p1-&gt;next;     //结合第3点理解</span><br><span class="line">                p1-&gt;next = p2;    //结合第4点理解</span><br><span class="line">                p = p1-&gt;next-&gt;next; //结合第6点理解</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    p1 = head;              //把p1的信息去掉</span><br><span class="line">    head = head-&gt;next;      //让head指向排序后的第一个节点</span><br><span class="line">    free (p1);          //释放p1</span><br><span class="line">    p1 = NULL;          //p1置为NULL，保证不产生“野指针”</span><br><span class="line"></span><br><span class="line">    return head;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="插入有序链表"><a href="#插入有序链表" class="headerlink" title="插入有序链表"></a>插入有序链表</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">struct student *SortInsert (struct student *head, struct student *node)</span><br><span class="line">&#123;</span><br><span class="line">    struct student *p;      //p保存当前需要检查的节点的地址</span><br><span class="line">    struct student *t;      //临时指针变量</span><br><span class="line"></span><br><span class="line">    if (head == NULL)       //处理空的有序链表</span><br><span class="line">    &#123;</span><br><span class="line">        head = node;</span><br><span class="line">        node-&gt;next = NULL;</span><br><span class="line">        n += 1;         //插入完毕，节点总数加</span><br><span class="line">        return head;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    p = head;             //有序链表不为空</span><br><span class="line">    while(p-&gt;num &lt; node-&gt;num &amp;&amp; p != NULL)     //p指向的节点的学号比插入节点的学号小，并且它不等于NULL</span><br><span class="line">    &#123;</span><br><span class="line">        t = p;            //保存当前节点的前驱，以便后面判断后处理</span><br><span class="line">        p = p-&gt;next;        //后移一个节点</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (p == head)      //刚好插入第一个节点之前</span><br><span class="line">    &#123;</span><br><span class="line">        node-&gt;next = p;</span><br><span class="line">        head = node;</span><br><span class="line">    &#125;</span><br><span class="line">    else                 //插入其它节点之后</span><br><span class="line">    &#123;</span><br><span class="line">        t-&gt;next = node;     //把node节点加进去</span><br><span class="line">        node-&gt;next = p;</span><br><span class="line">    &#125;</span><br><span class="line">    n += 1;         //插入完毕，节点总数加1</span><br><span class="line"></span><br><span class="line">    return head;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>至此链表的常用操作函数与实现方法已总结完毕，完整的测试程序见<a href="http://blog.csdn.net/hackbuteer1/article/details/6591486/" target="_blank" rel="noopener">hackbuteer1的博客</a>。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/17/pgr-in-ubuntu/" rel="next" title="ubuntu下PointGrey相机配置">
+                <i class="fa fa-chevron-left"></i> ubuntu下PointGrey相机配置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/20/dp-problem/" rel="prev" title="动态规划问题详解">
+                动态规划问题详解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://raw.githubusercontent.com/Leooo48/markdownimages/master/1731554065.jpg" alt="李浩 Leo">
+            
+              <p class="site-author-name" itemprop="name">李浩 Leo</p>
+              <p class="site-description motion-element" itemprop="description">身处安乐之时，莫忘昔日之痛</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#链表定义"><span class="nav-text">链表定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#链表创建"><span class="nav-text">链表创建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#链表中元素删除"><span class="nav-text">链表中元素删除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#链表中指定位置插入结点"><span class="nav-text">链表中指定位置插入结点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#单向链表反序"><span class="nav-text">单向链表反序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#链表排序"><span class="nav-text">链表排序</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#选择排序"><span class="nav-text">选择排序</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#链表直接插入排序"><span class="nav-text">链表直接插入排序</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#链表冒泡排序"><span class="nav-text">链表冒泡排序</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#插入有序链表"><span class="nav-text">插入有序链表</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">李浩 Leo</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

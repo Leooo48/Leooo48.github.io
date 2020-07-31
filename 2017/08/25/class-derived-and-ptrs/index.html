@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="转载自潘志威的博客。 继承中的指针问题指向基类的指针可以指向派生类对象，当基类指针指向派生类对象时，这种指针只能访问派生对象从基类继承而来的那些成员，不能访问子类特有的元素，除非应用强类型转换。例如有基类B和从B派生的子类D，则B *p; D dd; p=&amp;amp;dd;是可以的，指针p只能访问从基类派生而来的成员，不能访问派生类D特有的成员．因为基类不知道派生类中的这些成员。 不能使派生类指针指">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++继承中的指针问题">
+<meta property="og:url" content="http://Leooo48.github.io/2017/08/25/class-derived-and-ptrs/index.html">
+<meta property="og:site_name" content="Leo&#39;s Blog">
+<meta property="og:description" content="转载自潘志威的博客。 继承中的指针问题指向基类的指针可以指向派生类对象，当基类指针指向派生类对象时，这种指针只能访问派生对象从基类继承而来的那些成员，不能访问子类特有的元素，除非应用强类型转换。例如有基类B和从B派生的子类D，则B *p; D dd; p=&amp;amp;dd;是可以的，指针p只能访问从基类派生而来的成员，不能访问派生类D特有的成员．因为基类不知道派生类中的这些成员。 不能使派生类指针指">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-07-31T06:18:08.404Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="C++继承中的指针问题">
+<meta name="twitter:description" content="转载自潘志威的博客。 继承中的指针问题指向基类的指针可以指向派生类对象，当基类指针指向派生类对象时，这种指针只能访问派生对象从基类继承而来的那些成员，不能访问子类特有的元素，除非应用强类型转换。例如有基类B和从B派生的子类D，则B *p; D dd; p=&amp;amp;dd;是可以的，指针p只能访问从基类派生而来的成员，不能访问派生类D特有的成员．因为基类不知道派生类中的这些成员。 不能使派生类指针指">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://Leooo48.github.io/2017/08/25/class-derived-and-ptrs/">
+
+
+
+
+
+  <title>C++继承中的指针问题 | Leo's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Fighting for Life</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://Leooo48.github.io/2017/08/25/class-derived-and-ptrs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="李浩 Leo">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://raw.githubusercontent.com/Leooo48/markdownimages/master/1731554065.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">C++继承中的指针问题</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-25T14:52:05+08:00">
+                2017-08-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>转载自<a href="http://blog.csdn.net/itolfn/article/details/7412364" target="_blank" rel="noopener">潘志威的博客</a>。</p>
+<h4 id="继承中的指针问题"><a href="#继承中的指针问题" class="headerlink" title="继承中的指针问题"></a>继承中的指针问题</h4><p><strong>指向基类的指针</strong>可以指向<strong>派生类对象</strong>，当基类指针指向派生类对象时，这种指针<strong>只能访问派生对象从基类继承而来的</strong>那些成员，不能访问子类<strong>特有的元素</strong>，除非应用强类型转换。<br>例如有基类B和从B派生的子类D，则<code>B *p; D dd; p=&amp;dd;</code>是可以的，指针p只能访问从基类派生而来的成员，不能访问派生类D特有的成员．因为基类不知道派生类中的这些成员。</p>
+<p><strong>不能使派生类指针指向基类对象！</strong></p>
+<p>如果派生类中覆盖了基类中的成员变量或函数，则当声明一个基类指针指向派生类对象时，这个基类指针只能访问基类中的成员变量或函数。<br>例如：基类B和派生类D都定义了函数f，则<code>B *p; D m; p=&amp;m; m.f()</code>将调用基类中的函数f()而不会调用派生类中的函数f()。</p>
+<p>如果基类指针指向派生类对象，则当对其进行增减运算时，它将指向它所认为的基类的下一个对象，而不会指向派生类的下一个对象，因此，应该认为对这种指针进行的增减操作是无效的。</p>
+<h4 id="虚函数的继承问题"><a href="#虚函数的继承问题" class="headerlink" title="虚函数的继承问题"></a>虚函数的继承问题</h4><p><strong>为什么要使用虚函数</strong>：当声明一个基类指针指向派生类对象时，这个基类指针只能访问基类中的成员函数，不能访问派生类中 特有的成员变量或函数 。如果使用虚函数就能使这个指向派生类对象的基类指针访问派生类中的成员函数，而不是基类中的成员函数，基于这一点派生类中的这个成员函数就必须和基类中的虚函数的形式<strong>完全相同</strong>，不然基类指针就找不到派生类中的这个成员函数。<br><strong>使用虚函数就实现了一个接口多种方法</strong>。</p>
+<p>如果基类含有虚函数则当声明了一个基类的指针时，当基类指针指向不同的派生类时，它就会调用相应派生类中定义的虚函数版本．这种调用方法是在运行时决定的 ，例如在类B中声明了虚函数，C、D、E都从B继承而来，且都实现了自已的虚函数版本，那么当定义了一个B类的指针P时，当P指向子类C时就会调用子类C中定义的虚函数，当P指向子类D时就会调用子类D中定义的虚函数，当P指向子类E时就会调用子类E中定义的虚函数。</p>
+<p><strong>虚函数与重载的区别</strong>：在子类中重定义虚函数时，虚函数必须有与基类虚函数的声明完全相同的参数类型和数量，这和重载是不同的。如果不相同，则是函数重载，就失去了虚函数的本质。</p>
+<p>析构函数可以是虚函数，但构造函数不能。</p>
+<p>纯虚函数声明形式为<code>virtual 类型 函数名(参数列表)=0;</code>注意后面的等于0。如果类至少有一个纯虚函数，则这个类就是抽象的。</p>
+<p>抽象类不能有对象，抽象类只能用作其它类的基类，因为抽象类中的一个或多个函数没有定义，所以不能用抽象类声明对象。但仍然可以用抽象类声明一个指针，这个指针指向派生类对象。</p>
+<p>如果派生类中未定义虚函数 ，则会使用基类中定义的函数。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/20/dp-problem/" rel="next" title="动态规划问题详解">
+                <i class="fa fa-chevron-left"></i> 动态规划问题详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/02/faster-rcnn/" rel="prev" title="Faster R-CNN用自己的数据集训练">
+                Faster R-CNN用自己的数据集训练 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://raw.githubusercontent.com/Leooo48/markdownimages/master/1731554065.jpg" alt="李浩 Leo">
+            
+              <p class="site-author-name" itemprop="name">李浩 Leo</p>
+              <p class="site-description motion-element" itemprop="description">身处安乐之时，莫忘昔日之痛</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#继承中的指针问题"><span class="nav-text">继承中的指针问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#虚函数的继承问题"><span class="nav-text">虚函数的继承问题</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">李浩 Leo</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

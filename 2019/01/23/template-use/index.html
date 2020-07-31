@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="模板是泛型编程的基础，泛型编程即以一种独立于任何特定类型的方式编写代码。 模板是创建泛型类或函数的蓝图或公式。例如库容器就是泛型编程的例子，每个容器都有一个单一的定义。我们常用的 向量 就是一个例子，可以定义许多不同类型的向量，如 vector &amp;lt;int&amp;gt; 或 vector &amp;lt;string&amp;gt;。 typename与class的区别首先，我们先来明确一个最基本的问题：在c++">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++中模板template的使用">
+<meta property="og:url" content="http://Leooo48.github.io/2019/01/23/template-use/index.html">
+<meta property="og:site_name" content="Leo&#39;s Blog">
+<meta property="og:description" content="模板是泛型编程的基础，泛型编程即以一种独立于任何特定类型的方式编写代码。 模板是创建泛型类或函数的蓝图或公式。例如库容器就是泛型编程的例子，每个容器都有一个单一的定义。我们常用的 向量 就是一个例子，可以定义许多不同类型的向量，如 vector &amp;lt;int&amp;gt; 或 vector &amp;lt;string&amp;gt;。 typename与class的区别首先，我们先来明确一个最基本的问题：在c++">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-07-31T06:18:08.404Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="C++中模板template的使用">
+<meta name="twitter:description" content="模板是泛型编程的基础，泛型编程即以一种独立于任何特定类型的方式编写代码。 模板是创建泛型类或函数的蓝图或公式。例如库容器就是泛型编程的例子，每个容器都有一个单一的定义。我们常用的 向量 就是一个例子，可以定义许多不同类型的向量，如 vector &amp;lt;int&amp;gt; 或 vector &amp;lt;string&amp;gt;。 typename与class的区别首先，我们先来明确一个最基本的问题：在c++">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://Leooo48.github.io/2019/01/23/template-use/">
+
+
+
+
+
+  <title>C++中模板template的使用 | Leo's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Fighting for Life</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://Leooo48.github.io/2019/01/23/template-use/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="李浩 Leo">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://raw.githubusercontent.com/Leooo48/markdownimages/master/1731554065.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">C++中模板template的使用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-23T13:32:01+08:00">
+                2019-01-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>模板是泛型编程的基础，泛型编程即以一种独立于任何特定类型的方式编写代码。</p>
+<p>模板是创建泛型类或函数的蓝图或公式。例如库容器就是泛型编程的例子，每个容器都有一个单一的定义。我们常用的 <strong>向量</strong> 就是一个例子，可以定义许多不同类型的向量，如 <code>vector &lt;int&gt;</code> 或 <code>vector &lt;string&gt;</code>。</p>
+<h1 id="typename与class的区别"><a href="#typename与class的区别" class="headerlink" title="typename与class的区别"></a>typename与class的区别</h1><p>首先，我们先来明确一个最基本的问题：在c++ Template中非常多地方都用到了<strong>typename</strong>与<strong>class</strong>这两个关键字，并且好像能够替换，是不是这两个关键字全然一样呢? </p>
+<p>事实上，<strong>class</strong>常被用于定义类。在模板引入c++后，最初定义模板的方法为：<code>template &lt;class T&gt;</code>，这里<strong>class</strong>关键字表明<strong>T</strong>是一个类型。后来，为了避免<strong>class</strong>在这两个地方的使用可能给人带来混淆，所以引入了<strong>typename</strong>这个关键字。它的作用同<strong>class</strong>一样，表明后面的符号为一个类型。这样在定义模板的时候就能够使用以下的方式了： <code>template &lt;typename T&gt;</code>。<br><strong>在模板定义语法中关键字class与typename的作用全然一样。</strong></p>
+<h1 id="类模板与模板类"><a href="#类模板与模板类" class="headerlink" title="类模板与模板类"></a>类模板与模板类</h1><h2 id="1-什么是类模板"><a href="#1-什么是类模板" class="headerlink" title="1. 什么是类模板"></a>1. 什么是类模板</h2><p>一个类模板（也称为类属类或类生成类）允许用户为类定义一种模式，使得类中的某些<strong>数据成员</strong>、成员函数的<strong>參数</strong>、某些成员函数的<strong>返回值</strong>能够取任意类型（包含系统提前定义的和用户自己定义的）。<br>假设一个类中数据成员的数据类型不能确定，或者是某个成员函数的參数或返回值的类型不能确定，就必须将此类声明为模板。类模板的存在不是代表一个详细的、实际的类，而是代表着<strong>一类</strong>类。</p>
+<h2 id="2-类模板定义"><a href="#2-类模板定义" class="headerlink" title="2. 类模板定义"></a>2. 类模板定义</h2><p>定义一个类模板，一般有2方面的内容：<br>A. 首先要定义类，其格式为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">template &lt;class T&gt;</span><br><span class="line">class foo &#123;</span><br><span class="line">……</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>foo 为类名，在类定义体中，如采用通用数据类型的成员，函数參数的前面需加上T。当中通用类型T能够作为普通成员变量的类型，还能够作为const和static成员变量以及成员函数的參数和返回类型之用，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">template &lt;class T&gt;</span><br><span class="line">class Test &#123;</span><br><span class="line"> private:</span><br><span class="line">  T n;</span><br><span class="line">  const T i;</span><br><span class="line">  static T cnt;</span><br><span class="line"> public:</span><br><span class="line">  Test():i(0) &#123;&#125;</span><br><span class="line">  Test(T k);</span><br><span class="line">  ~Test()&#123;&#125;</span><br><span class="line">  void print();</span><br><span class="line">  T operator+(T x);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>B. 在类定义体外定义成员函数时，若此成员函数中有模板參数存在，则除了须要和一般类的体外定义成员函数一样的定义外，还需在函数体外进行<strong>模板声明</strong> ，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">template &lt;class T&gt;</span><br><span class="line">void Test&lt;T&gt;::print() &#123;</span><br><span class="line">  std::cout &lt;&lt; &quot;n=&quot; &lt;&lt; n &lt;&lt; std::endl;</span><br><span class="line">  std::cout &lt;&lt; &quot;i=&quot; &lt;&lt; i &lt;&lt; std::endl;</span><br><span class="line">  std::cout &lt;&lt; &quot;cnt=&quot; &lt;&lt; cnt &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>假设函数是以通用类型为返回类型，则要在函数名前的类名后缀上<code>&lt;T&gt;</code>，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">template&lt;class T&gt;</span><br><span class="line">Test&lt;T&gt;::Test(T k) : i(k) &#123; </span><br><span class="line">  n = k;</span><br><span class="line">  cnt++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">template&lt;class T&gt;</span><br><span class="line">T Test&lt;T&gt;::operator+(T x)&#123;</span><br><span class="line">  return n + x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>C. 在类定义体外初始化const成员和static成员变量的做法和普通类体外初始化const成员和static成员变量的做法基本上是一样的，唯一的差别是需再对<strong>模板进行声明</strong>，如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">template&lt;class T&gt;</span><br><span class="line">int Test&lt;T&gt;::cnt = 0;</span><br><span class="line"></span><br><span class="line">template &lt;class T&gt;</span><br><span class="line">Test&lt;T&gt;::Test(T k) : i(k) &#123;</span><br><span class="line">  n  =k;</span><br><span class="line">  cnt++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3-类模板的使用"><a href="#3-类模板的使用" class="headerlink" title="3. 类模板的使用"></a>3. 类模板的使用</h2><p>类模板的使用实际上是将类模板<strong>实例化</strong>成一个详细的类，它的格式为：类名&lt;实际的类型&gt;。模板类是类模板实例化后的一个产物。</p>
+<h1 id="函数模板和模板函数"><a href="#函数模板和模板函数" class="headerlink" title="函数模板和模板函数"></a>函数模板和模板函数</h1><h2 id="1-函数模板"><a href="#1-函数模板" class="headerlink" title="1. 函数模板"></a>1. 函数模板</h2><p>函数模板能够用来创建一个通用的函数，以支持多种不同的形參，避免重载函数的函数体反复设计。<br>它的最大特点是把函数使用的数据类型作为參数。</p>
+<p>函数模板的声明形式为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">template &lt;typename（或class) T&gt;</span><br><span class="line">&lt;返回类型&gt; &lt;函数名&gt;(參数表) &#123;</span><br><span class="line">   函数体</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>template是定义模板函数的关键字</li>
+<li>template后面的尖括号不能省略</li>
+<li>typename（或class)是声明数据类型參数标识符的关键字，用以说明它后面的标识符是数据类型标识符。</li>
+</ul>
+<p>这样，在以后定义的这个函数中，凡希望依据实參数据类型来确定数据类型的变量，都能够用数据类型參数标识符来说明，从而使这个变量能够适应不同的数据类型。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">template&lt;typename（或class) T&gt;</span><br><span class="line">T fuc(T x, T y) &#123;</span><br><span class="line">  T x;</span><br><span class="line">  ……</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>函数模板仅仅是声明了一个函数的描写叙述，并不是一个能够直接运行的函数。只有在依据实际情况用实參的数据类型取代类型參数标识符之后，才是真正的函数。</p>
+<h2 id="2-模板函数"><a href="#2-模板函数" class="headerlink" title="2. 模板函数"></a>2. 模板函数</h2><p>模板函数的生成就是将函数模板的类型形參实例化的过程。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">double d;</span><br><span class="line">int a;</span><br><span class="line">fuc(d,a);</span><br></pre></td></tr></table></figure>
+<p>则系统将用实參d的数据类型double去取代函数模板中的T生成函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">double fuc(double x, int y) &#123;</span><br><span class="line">  double x;</span><br><span class="line">  ……</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="例程"><a href="#例程" class="headerlink" title="例程"></a>例程</h1><p>下面看几个例程。</p>
+<h2 id="1-函数模板-1"><a href="#1-函数模板-1" class="headerlink" title="1. 函数模板"></a>1. 函数模板</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;string&gt;</span><br><span class="line"></span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">template &lt;typename T&gt; </span><br><span class="line">inline T const&amp; Max (T const&amp; a, T const&amp; b) &#123;</span><br><span class="line">  return  a &lt; b ? b : a;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">  int i = 39; </span><br><span class="line">  int j = 20; </span><br><span class="line">  cout &lt;&lt; &quot;Max(i, j): &quot; &lt;&lt; Max(i, j) &lt;&lt; endl; </span><br><span class="line">  </span><br><span class="line">  double f1 = 13.5;</span><br><span class="line">  double f2 = 20.7; </span><br><span class="line">  cout &lt;&lt; &quot;Max(f1, f2): &quot; &lt;&lt; Max(f1, f2) &lt;&lt; endl; </span><br><span class="line">  </span><br><span class="line">  string s1 = &quot;Hello&quot;;</span><br><span class="line">  string s2 = &quot;World&quot;; </span><br><span class="line">  cout &lt;&lt; &quot;Max(s1, s2): &quot; &lt;&lt; Max(s1, s2) &lt;&lt; endl; </span><br><span class="line">  </span><br><span class="line">  return 0; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当上面的代码被编译和执行时，它会产生下列结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Max(i, j): 39</span><br><span class="line">Max(f1, f2): 20.7</span><br><span class="line">Max(s1, s2): World</span><br></pre></td></tr></table></figure>
+<h2 id="2-类模板"><a href="#2-类模板" class="headerlink" title="2. 类模板"></a>2. 类模板</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;vector&gt;</span><br><span class="line">#include &lt;cstdlib&gt;</span><br><span class="line">#include &lt;string&gt;</span><br><span class="line">#include &lt;stdexcept&gt;</span><br><span class="line"></span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">template &lt;class T&gt;</span><br><span class="line">class Stack &#123;</span><br><span class="line"> private:</span><br><span class="line">  vector&lt;T&gt; elems; // 元素</span><br><span class="line"> public:</span><br><span class="line">  void push(T const&amp;); // 入栈</span><br><span class="line">  </span><br><span class="line">  void pop(); // 出栈</span><br><span class="line">  </span><br><span class="line">  T top() const; // 返回栈顶元素 </span><br><span class="line">  </span><br><span class="line">  bool empty() const &#123;  // 如果为空则返回真</span><br><span class="line">    return elems.empty(); </span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">template &lt;class T&gt;</span><br><span class="line">void Stack&lt;T&gt;::push(T const&amp; elem) &#123;  // 追加传入元素的副本</span><br><span class="line">  elems.push_back(elem); </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">template &lt;class T&gt;</span><br><span class="line">void Stack&lt;T&gt;::pop() &#123;</span><br><span class="line">  if (elems.empty()) &#123;</span><br><span class="line">    throw out_of_range(&quot;Stack&lt;&gt;::pop(): empty stack&quot;);</span><br><span class="line">  &#125;  </span><br><span class="line">  // 删除最后一个元素</span><br><span class="line">  elems.pop_back(); </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">template &lt;class T&gt;</span><br><span class="line">T Stack&lt;T&gt;::top () const &#123;</span><br><span class="line">  if (elems.empty()) &#123;</span><br><span class="line">    throw out_of_range(&quot;Stack&lt;&gt;::top(): empty stack&quot;);</span><br><span class="line">  &#125;  </span><br><span class="line">  // 返回最后一个元素的副本 </span><br><span class="line">  return elems.back(); </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">  try &#123;</span><br><span class="line">    Stack&lt;int&gt; intStack; // int 类型的栈</span><br><span class="line">    Stack&lt;string&gt; stringStack; // string 类型的栈 </span><br><span class="line">    </span><br><span class="line">    // 操作 int 类型的栈 </span><br><span class="line">    intStack.push(7); </span><br><span class="line">    cout &lt;&lt; intStack.top() &lt;&lt;endl; </span><br><span class="line">    </span><br><span class="line">    // 操作 string 类型的栈 </span><br><span class="line">    stringStack.push(&quot;hello&quot;); </span><br><span class="line">    cout &lt;&lt; stringStack.top() &lt;&lt; std::endl; </span><br><span class="line">    stringStack.pop(); </span><br><span class="line">    stringStack.pop(); </span><br><span class="line">  &#125; catch (exception const&amp; ex) &#123;</span><br><span class="line">    cerr &lt;&lt; &quot;Exception: &quot; &lt;&lt; ex.what() &lt;&lt; endl; </span><br><span class="line">    return -1; </span><br><span class="line">  &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当上面的代码被编译和执行时，它会产生下列结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">7</span><br><span class="line">hello</span><br><span class="line">Exception: Stack&lt;&gt;::pop(): empty stack</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/02/static-in-class/" rel="next" title="类中的静态成员">
+                <i class="fa fa-chevron-left"></i> 类中的静态成员
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/24/clangformat-ubuntu/" rel="prev" title="Ubuntu 16.04中Sublime配置ClangFormat">
+                Ubuntu 16.04中Sublime配置ClangFormat <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://raw.githubusercontent.com/Leooo48/markdownimages/master/1731554065.jpg" alt="李浩 Leo">
+            
+              <p class="site-author-name" itemprop="name">李浩 Leo</p>
+              <p class="site-description motion-element" itemprop="description">身处安乐之时，莫忘昔日之痛</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#typename与class的区别"><span class="nav-text">typename与class的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#类模板与模板类"><span class="nav-text">类模板与模板类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-什么是类模板"><span class="nav-text">1. 什么是类模板</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-类模板定义"><span class="nav-text">2. 类模板定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-类模板的使用"><span class="nav-text">3. 类模板的使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#函数模板和模板函数"><span class="nav-text">函数模板和模板函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-函数模板"><span class="nav-text">1. 函数模板</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-模板函数"><span class="nav-text">2. 模板函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#例程"><span class="nav-text">例程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-函数模板-1"><span class="nav-text">1. 函数模板</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-类模板"><span class="nav-text">2. 类模板</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">李浩 Leo</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

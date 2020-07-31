@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="面试所需的数据结构、C++基础知识与细节问题记录专帖（接上帖）。 有符号变量与无符号变量值的转换当表达式中存在有符号类型和无符号类型时，所有的操作数都自动转换成无符号类型。负数转化为无符号整形数后，会是一个非常大的数，相加后可能会溢出，从而和为0。 用#define声明一个常数如每年多少秒：#define SECOND_PER_YEAR (60*60*24*365)UL注意：#define的表达式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构与C++基础汇总(二)">
+<meta property="og:url" content="http://Leooo48.github.io/2017/08/08/C-points2/index.html">
+<meta property="og:site_name" content="Leo&#39;s Blog">
+<meta property="og:description" content="面试所需的数据结构、C++基础知识与细节问题记录专帖（接上帖）。 有符号变量与无符号变量值的转换当表达式中存在有符号类型和无符号类型时，所有的操作数都自动转换成无符号类型。负数转化为无符号整形数后，会是一个非常大的数，相加后可能会溢出，从而和为0。 用#define声明一个常数如每年多少秒：#define SECOND_PER_YEAR (60*60*24*365)UL注意：#define的表达式">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-07-31T06:18:08.404Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据结构与C++基础汇总(二)">
+<meta name="twitter:description" content="面试所需的数据结构、C++基础知识与细节问题记录专帖（接上帖）。 有符号变量与无符号变量值的转换当表达式中存在有符号类型和无符号类型时，所有的操作数都自动转换成无符号类型。负数转化为无符号整形数后，会是一个非常大的数，相加后可能会溢出，从而和为0。 用#define声明一个常数如每年多少秒：#define SECOND_PER_YEAR (60*60*24*365)UL注意：#define的表达式">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://Leooo48.github.io/2017/08/08/C-points2/">
+
+
+
+
+
+  <title>数据结构与C++基础汇总(二) | Leo's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Fighting for Life</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://Leooo48.github.io/2017/08/08/C-points2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="李浩 Leo">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://raw.githubusercontent.com/Leooo48/markdownimages/master/1731554065.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">数据结构与C++基础汇总(二)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-08T22:26:08+08:00">
+                2017-08-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>面试所需的数据结构、C++基础知识与细节问题记录专帖（接上帖）。</p>
+<h2 id="有符号变量与无符号变量值的转换"><a href="#有符号变量与无符号变量值的转换" class="headerlink" title="有符号变量与无符号变量值的转换"></a>有符号变量与无符号变量值的转换</h2><p>当表达式中存在有符号类型和无符号类型时，所有的操作数都自动转换成<strong>无符号类型</strong>。<br>负数转化为无符号整形数后，会是一个非常大的数，相加后可能会溢出，从而和为0。</p>
+<h2 id="用-define声明一个常数"><a href="#用-define声明一个常数" class="headerlink" title="用#define声明一个常数"></a>用#define声明一个常数</h2><p>如每年多少秒：<br><code>#define SECOND_PER_YEAR (60*60*24*365)UL</code><br>注意：<code>#define</code>的表达式中可以计算，并且若结果较大，加上L代表长整型，同时若数据恒为正，则加U代表无符号整型。</p>
+<h2 id="预处理的应用"><a href="#预处理的应用" class="headerlink" title="预处理的应用"></a>预处理的应用</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line"></span><br><span class="line">#define DEBUG</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	...</span><br><span class="line">#ifdef DEBUG</span><br><span class="line">	printf(&quot;debug info\n&quot;);</span><br><span class="line">#endif</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里用#ifdef判断DEBUG是否被预定义了。若预定义了，则执行printf语句；否则执行#endif后的语句，而不执行printf语句。</p>
+<h2 id="宏参数的连接"><a href="#宏参数的连接" class="headerlink" title="宏参数的连接"></a>宏参数的连接</h2><p>在宏定义中，用#吧宏参数变成一个字符串，用##把两个宏参数连接起来。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line"></span><br><span class="line">#define STR(s) #s</span><br><span class="line">#define CONS(a,b) (int)(a##e##b)</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="sizeof计算变量所占空间大小"><a href="#sizeof计算变量所占空间大小" class="headerlink" title="sizeof计算变量所占空间大小"></a>sizeof计算变量所占空间大小</h2><p>计算结果是<strong>字节</strong>，即所占几个字节。<strong>1字节=8bit=8位，1位=0或1。</strong>字由若干个字节构成，字的位数叫做字长，不同档次的机器有不同的字长。例如一台8位机，它的1个字就等于1个字节，字长为8位。如果是一台16位机，那么，它的1个字就由2个字节构成，字长为16位。</p>
+<p>1、普通变量大小（32位编译系统）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">sizeof(int)=4;</span><br><span class="line">sizeof(char)=1;</span><br><span class="line">sizeof(short)=2;</span><br><span class="line">sizeof(long)=8;</span><br><span class="line">sizeof(double)=8;</span><br><span class="line"></span><br><span class="line">char *p;</span><br><span class="line">sizeof(p)=4; //指针大小恒为4</span><br><span class="line"></span><br><span class="line">char str[]=&quot;Hello&quot;</span><br><span class="line">sizeof(str)=6; //5+1 因为末尾有结束符 ‘\0’</span><br></pre></td></tr></table></figure></p>
+<p>2、类/结构体对象大小<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class E</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	int i;</span><br><span class="line">	int ii;</span><br><span class="line">	short j;</span><br><span class="line">	char ch;</span><br><span class="line">	int iii;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">sizeof(E)=12; //4+4+2+1+1(补充)+4=16</span><br></pre></td></tr></table></figure></p>
+<p>类或结构体的大小计算要满足对齐原则：</p>
+<ul>
+<li>首地址要能够被最宽的基本类型大小整除</li>
+<li>每个成员相对于首地址的偏移量都是成员大小的整数倍，如果不是会补充字节</li>
+<li>总大小是最宽的基本类型大小的整数倍，如果不是会补充字节</li>
+</ul>
+<p>注意：</p>
+<ul>
+<li>只有类的变量占用大小，类的函数是不占用内存的。空类默认分配一个char用来表示类的对象。</li>
+<li>类的静态成员储存在静态存储区中，不算在类的大小内。</li>
+<li>对于包含<strong>虚函数</strong>的类来说，除了本身变量占用的大小外，多加了一个指针大小（4），用来保存虚表指针成员。</li>
+<li>继承时，子类包含一个指向父类的指针，大小为4。</li>
+</ul>
+<p>3、联合体大小</p>
+<p>联合体的大小取决于它所有成员中占用空间最大的一个成员大小，但要注意cpu对齐问题。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">union u</span><br><span class="line">&#123;</span><br><span class="line">	double a;</span><br><span class="line">	int b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">union u2</span><br><span class="line">&#123;</span><br><span class="line">	char a[13];</span><br><span class="line">	int b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">sizeof(u)=8;</span><br><span class="line">sizeof(u2)=16; //char型数组大小为13，但还有一个int型变量，对齐方式为4，因此13应补齐4的整数倍，即16</span><br></pre></td></tr></table></figure></p>
+<p>4、CPU对齐问题</p>
+<p>可以用 #pragma pack(x) 改变编译器的对齐方式，C++固有类型对齐方式取编译器对齐方式与自身大小中较小的一个。例如编译器按照2对齐，int型大小为4，则对齐取2与4较小的2作为对齐方式。</p>
+<p>如无特殊说明，编译器默认对齐为8，各个成员大小小于8的均采用各自大小的对齐方式。</p>
+<h2 id="联合体与结构体的区别"><a href="#联合体与结构体的区别" class="headerlink" title="联合体与结构体的区别"></a>联合体与结构体的区别</h2><ul>
+<li>联合体：几个不同类型的变量占用同一段内存，互相之间不能同时存在</li>
+<li>结构体：把不同数据类型的变量组合成一个新的整体，从而定义出一个新的数据类型，互相之间是可以同时存在的</li>
+</ul>
+<p><strong>注意：</strong></p>
+<ol>
+<li>struct和union都是由多个不同的数据类型成员组成, 但在任何同一时刻, union中只存放了一个被选中的成员, 而struct的所有成员都存在。在struct中，各成员都占有自己的内存空间，它们是同时存在的。一个struct变量的总长度等于所有成员长度之和。在Union中，所有成员不能同时占用它的内存空间，它们不能同时存在。Union变量的长度等于最长的成员的长度。</li>
+<li>对于union的不同成员赋值, 将会对其它成员重写, 原来成员的值就不存在了, 而对于struct的不同成员赋值是互不影响的。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">union myun  </span><br><span class="line">&#123;  </span><br><span class="line">     struct &#123; int x; int y; int z; &#125;u;  </span><br><span class="line">     int k;  </span><br><span class="line">&#125;a;  </span><br><span class="line">int main()  </span><br><span class="line">&#123;  </span><br><span class="line">     a.u.x =4;  </span><br><span class="line">     a.u.y =5;  </span><br><span class="line">     a.u.z =6;  </span><br><span class="line">     a.k = 0;  </span><br><span class="line">     printf(&quot;%d %d %d\n&quot;,a.u.x,a.u.y,a.u.z);  </span><br><span class="line">     return 0;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>输出为  <code>0 5 6</code>。</p>
+<h2 id="数组指针-1的意义"><a href="#数组指针-1的意义" class="headerlink" title="数组指针+1的意义"></a>数组指针+1的意义</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">main()</span><br><span class="line">&#123;</span><br><span class="line">	int a[5]=&#123;1,2,3,4,5&#125;;</span><br><span class="line">	int *ptr=(int *)(&amp;a+1); </span><br><span class="line">	printf(&quot;%d,%d&quot;,*(a+1),*(ptr-1));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出为 <code>2,5</code>。因为<code>*(a+1）</code>就是a[1]，<code>*(ptr-1)</code>就是a[4],执行结果是 <code>2,5</code>。<br>a,&amp;a的地址是一样的，但意思不一样：</p>
+<ul>
+<li>a是数组首地址，也就是a[0]的地址，a+1是数组下一元素的地址，即a[1]；</li>
+<li>&amp;a是对象（数组）首地址，&amp;a+1不是首地址+1，系统会认为加一个a数组的偏移，是偏移了一个数组的大小（本例是5个int），也就是说&amp;a+1是下一个对象的地址，即a[5]。</li>
+</ul>
+<p>&amp;a是数组指针，其类型为 <code>int (*)a[5]</code>；而指针加1要根据指针类型加上一定的值，不同类型的指针+1之后增加的大小不同，a是长度为5的int数组指针，所以要加 <code>5*sizeof(int)</code>，所以ptr实际是a[5]。<br>但是prt与(&amp;a+1)类型是不一样的(<strong>这点很重要</strong>)。所以，prt-1只会减去<code>sizeof(int*)</code>，也就是a[4]。</p>
+<h2 id="assert函数用法总结"><a href="#assert函数用法总结" class="headerlink" title="assert函数用法总结"></a>assert函数用法总结</h2><p>assert宏的原型定义在&lt;assert.h&gt;中，其作用是如果它的条件返回错误，则终止程序执行，原型定义：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;assert.h&gt;</span><br><span class="line">void assert( int expression );</span><br></pre></td></tr></table></figure></p>
+<p>assert的作用是现计算表达式 expression ，如果其值为假（即为0），那么它先向stderr打印一条出错信息，然后通过调用 abort 来终止程序运行。</p>
+<p><strong>注意事项</strong></p>
+<ul>
+<li><p>在函数开始处检验传入参数的合法性如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">int resetBufferSize(int nNewSize)</span><br><span class="line">&#123;</span><br><span class="line">　　//功能:改变缓冲区大小,</span><br><span class="line">　　//参数:nNewSize 缓冲区新长度</span><br><span class="line">　　//返回值:缓冲区当前长度 </span><br><span class="line">　　//说明:保持原信息内容不变     nNewSize&lt;=0表示清除缓冲区</span><br><span class="line">　　assert(nNewSize &gt;= 0);</span><br><span class="line">　　assert(nNewSize &lt;= MAX_BUFFER_SIZE);</span><br><span class="line">　　...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>每个assert只检验一个条件，因为同时检验多个条件时，如果断言失败，无法直观的判断是哪个条件失败</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">assert(nOffset &gt;= 0);</span><br><span class="line">assert(nOffset+nSize &lt;= m_nInfomationSize);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>不能使用改变环境的语句，因为assert只在DEBUG个生效，如果这么做，会使用程序在真正运行时遇到问题</p>
+</li>
+<li>assert和后面的语句应空一行，以形成逻辑和视觉上的一致感</li>
+<li>有的地方，assert不能代替条件过滤</li>
+</ul>
+<h2 id="判断是否为回文字符串"><a href="#判断是否为回文字符串" class="headerlink" title="判断是否为回文字符串"></a>判断是否为回文字符串</h2><p>递归法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;  </span><br><span class="line">using namespace std;  </span><br><span class="line"></span><br><span class="line">int fun(int low, int high, char *str, int length)  </span><br><span class="line">&#123;  </span><br><span class="line">    if (length == 0 || length == 1)  </span><br><span class="line">        return    1;  </span><br><span class="line">    if (str[low] != str[high])  </span><br><span class="line">        return    0;  </span><br><span class="line">    return fun(low+1, high-1, str, length-2);  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line">int main()  </span><br><span class="line">&#123;  </span><br><span class="line">    char    str[]=&quot;aaabdaaa&quot;;  </span><br><span class="line">    int     length = strlen(str);  </span><br><span class="line">    //返回1代表是， 0代表不是  </span><br><span class="line">    cout &lt;&lt; fun(0, length-1, str, length) &lt;&lt; endl;  </span><br><span class="line">    return    0;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="字符串操作函数"><a href="#字符串操作函数" class="headerlink" title="字符串操作函数"></a>字符串操作函数</h2><p>包含头文件：<code>#include &lt;string.h&gt; // C语言</code><br>包含头文件：<code>#include &lt;cstring&gt; // C++</code></p>
+<p>输入字符串可以是<code>char str[]=&quot;abcdefg&quot;;</code>或者<code>char str[7]=&quot;abcdefg&quot;;</code>或者<code>char *str=new char[10]; cin&gt;&gt;str;</code></p>
+<p>操作函数：<br><code>extern char* strcpy(char* dest, const char* src)</code>：把从src地址开始的、含有<code>&#39;\0&#39;</code>结束符的字符串，复制到以dest地址开始的字符串中，并返回指向dest的指针。也就是将src字符数组复制到dest数组中，如果dest数组本身有数据，则dest中数据小于src地址长度的将会被覆盖，而大于src长度的将保留<br><code>extern char* strstr(char* str1, char* str2)</code>：从字符串str1中查找是否有字符串str2， 如果有，从str1中的str2位置起，返回str1的指针，如果没有，返回NULL<br><code>extern int strcmp(const char* s1, const char* s2)</code>：比较字符串s1和s2，当s1&lt;s2时，返回值&lt;0；当s1=s2时，返回值=0；当s1&gt;s2时，返回值&gt;0<br><code>extern unsigned int strlen(char* s)</code>：计算字符串的长度，不包括<code>&#39;\0&#39;</code>在内<br><code>extern char* strcat(char* dest, const char* src)</code>：连接字符串，将<code>src</code>连接到<code>dest</code>的尾部，覆盖<code>\0</code><br><code>extern unsigned int strrev(char* s)</code>：反转字符串，只对字符数组有用，对<code>string</code>类型是没用的</p>
+<h2 id="stack-栈的使用"><a href="#stack-栈的使用" class="headerlink" title="stack 栈的使用"></a>stack 栈的使用</h2><p>包含头文件：<code>#include &lt;stack&gt;</code><br>定义一个栈：<code>stack&lt;int&gt; stk1;</code><br>入栈：<code>stk1.push(obj);</code><br>出栈：<code>stk1.pop();</code><br>栈顶指针：<code>stk1.top();</code></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/05/C-points/" rel="next" title="数据结构与C++基础汇总(一)">
+                <i class="fa fa-chevron-left"></i> 数据结构与C++基础汇总(一)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/11/C-points3/" rel="prev" title="数据结构与C++基础汇总(三)">
+                数据结构与C++基础汇总(三) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://raw.githubusercontent.com/Leooo48/markdownimages/master/1731554065.jpg" alt="李浩 Leo">
+            
+              <p class="site-author-name" itemprop="name">李浩 Leo</p>
+              <p class="site-description motion-element" itemprop="description">身处安乐之时，莫忘昔日之痛</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#有符号变量与无符号变量值的转换"><span class="nav-text">有符号变量与无符号变量值的转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用-define声明一个常数"><span class="nav-text">用#define声明一个常数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#预处理的应用"><span class="nav-text">预处理的应用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#宏参数的连接"><span class="nav-text">宏参数的连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sizeof计算变量所占空间大小"><span class="nav-text">sizeof计算变量所占空间大小</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#联合体与结构体的区别"><span class="nav-text">联合体与结构体的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数组指针-1的意义"><span class="nav-text">数组指针+1的意义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#assert函数用法总结"><span class="nav-text">assert函数用法总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#判断是否为回文字符串"><span class="nav-text">判断是否为回文字符串</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#字符串操作函数"><span class="nav-text">字符串操作函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#stack-栈的使用"><span class="nav-text">stack 栈的使用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">李浩 Leo</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

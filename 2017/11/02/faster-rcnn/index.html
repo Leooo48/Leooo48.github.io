@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Faster R-CNN的原理就不多说了，在做课题过程中需要重新训练车辆检测模型，因此本文记录一下操作的过程，以备日后复现。 环境我是用的环境是Ubuntu 14.04 + Titan Xp(12Gb) + cuda 8.0 编译 从github上把Faster RCNN项目的code给clone下来 1git clone –recursive https://github.com/rbgirsh">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Faster R-CNN用自己的数据集训练">
+<meta property="og:url" content="http://Leooo48.github.io/2017/11/02/faster-rcnn/index.html">
+<meta property="og:site_name" content="Leo&#39;s Blog">
+<meta property="og:description" content="Faster R-CNN的原理就不多说了，在做课题过程中需要重新训练车辆检测模型，因此本文记录一下操作的过程，以备日后复现。 环境我是用的环境是Ubuntu 14.04 + Titan Xp(12Gb) + cuda 8.0 编译 从github上把Faster RCNN项目的code给clone下来 1git clone –recursive https://github.com/rbgirsh">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-07-31T06:18:08.404Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Faster R-CNN用自己的数据集训练">
+<meta name="twitter:description" content="Faster R-CNN的原理就不多说了，在做课题过程中需要重新训练车辆检测模型，因此本文记录一下操作的过程，以备日后复现。 环境我是用的环境是Ubuntu 14.04 + Titan Xp(12Gb) + cuda 8.0 编译 从github上把Faster RCNN项目的code给clone下来 1git clone –recursive https://github.com/rbgirsh">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://Leooo48.github.io/2017/11/02/faster-rcnn/">
+
+
+
+
+
+  <title>Faster R-CNN用自己的数据集训练 | Leo's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Fighting for Life</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://Leooo48.github.io/2017/11/02/faster-rcnn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="李浩 Leo">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://raw.githubusercontent.com/Leooo48/markdownimages/master/1731554065.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Faster R-CNN用自己的数据集训练</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-02T17:31:31+08:00">
+                2017-11-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Caffe/" itemprop="url" rel="index">
+                    <span itemprop="name">Caffe</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Faster R-CNN的原理就不多说了，在做课题过程中需要重新训练车辆检测模型，因此本文记录一下操作的过程，以备日后复现。</p>
+<h1 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h1><p>我是用的环境是Ubuntu 14.04 + Titan Xp(12Gb) + cuda 8.0</p>
+<h1 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h1><ol>
+<li><p>从github上把Faster RCNN项目的code给clone下来</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone –recursive https://github.com/rbgirshick/py-faster-rcnn.git</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>编译lib</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd $FRCN_ROOT/lib</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>编译caffe和pycaffe</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd $FRCN_ROOT/caffe-fast-rcnn</span><br><span class="line">cp Makefile.config.examplem Makefile.config</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>修改Makefile.config<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">WITH_PYTHON_LAYER := 1</span><br><span class="line">USE_CUDNN := 1</span><br></pre></td></tr></table></figure></p>
+<p>然后编译<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir build</span><br><span class="line">cd build</span><br><span class="line">cmake ..</span><br><span class="line">make -j12 &amp;&amp; make pycaffe</span><br></pre></td></tr></table></figure></p>
+<p>等待编译完成即可。</p>
+<h1 id="用demo-py测试代码是否正常"><a href="#用demo-py测试代码是否正常" class="headerlink" title="用demo.py测试代码是否正常"></a>用demo.py测试代码是否正常</h1><p>下载与训练好的模型，并运行demo程序。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd $FRCN_ROOT</span><br><span class="line">./data/scripts/fetch_faster_rcnn_models.sh</span><br><span class="line"></span><br><span class="line">./tools/demo.py</span><br></pre></td></tr></table></figure>
+<p>如果正常出图，并且做好了物体检测，则代码正常。</p>
+<h1 id="训练自己的数据集"><a href="#训练自己的数据集" class="headerlink" title="训练自己的数据集"></a>训练自己的数据集</h1><p>Faster RCNN是在PASCAL VOC 2007的数据集上进行训练的，默认的数据集结构包含</p>
+<blockquote>
+<p>JPEGImages：存放用来训练的原始图像<br>Annotations：存放原始图像中的目标坐标信息，xml格式<br>ImageSets/Main：指定train、trainval、test、val的图片编号，txt格式</p>
+</blockquote>
+<p>如果使用其他数据集的话，如KITTI，则需要对数据集进行转换。这里提供两个实测非常方便的python脚本，用来合并目标类，生成xml文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"># modify_annotations_txt.py</span><br><span class="line"># coding=UTF-8</span><br><span class="line">import glob</span><br><span class="line">import string</span><br><span class="line"></span><br><span class="line">txt_list = glob.glob(&apos;./Labels/*.txt&apos;) # 存储Labels文件夹所有txt文件路径</span><br><span class="line">def show_category(txt_list):</span><br><span class="line">    category_list= []</span><br><span class="line">    for item in txt_list:</span><br><span class="line">        try:</span><br><span class="line">            with open(item) as tdf:</span><br><span class="line">                for each_line in tdf:</span><br><span class="line">                    labeldata = each_line.strip().split(&apos; &apos;) # 去掉前后多余的字符并把其分开</span><br><span class="line">                    category_list.append(labeldata[0]) # 只要第一个字段，即类别</span><br><span class="line">        except IOError as ioerr:</span><br><span class="line">            print(&apos;File error:&apos;+str(ioerr))</span><br><span class="line">    print(set(category_list)) # 输出集合</span><br><span class="line"></span><br><span class="line">def merge(line):</span><br><span class="line">    each_line=&apos;&apos;</span><br><span class="line">    for i in range(len(line)):</span><br><span class="line">        if i!= (len(line)-1):</span><br><span class="line">            each_line=each_line+line[i]+&apos; &apos;</span><br><span class="line">        else:</span><br><span class="line">            each_line=each_line+line[i] # 最后一条字段后面不加空格</span><br><span class="line">    each_line=each_line+&apos;\n&apos;</span><br><span class="line">    return (each_line)</span><br><span class="line"></span><br><span class="line">print(&apos;before modify categories are:\n&apos;)</span><br><span class="line">show_category(txt_list)</span><br><span class="line"></span><br><span class="line">for item in txt_list:</span><br><span class="line">    new_txt=[]</span><br><span class="line">    try:</span><br><span class="line">        with open(item, &apos;r&apos;) as r_tdf:</span><br><span class="line">            for each_line in r_tdf:</span><br><span class="line">                labeldata = each_line.strip().split(&apos; &apos;)</span><br><span class="line">                if labeldata[0] in [&apos;Truck&apos;,&apos;Van&apos;,&apos;Tram&apos;,&apos;Car&apos;]: # 合并汽车类</span><br><span class="line">                    labeldata[0] = labeldata[0].replace(labeldata[0],&apos;car&apos;)</span><br><span class="line">                if labeldata[0] in [&apos;Person_sitting&apos;,&apos;Pedestrian&apos;]: # 合并行人类</span><br><span class="line">                    continue</span><br><span class="line">                #    labeldata[0] = labeldata[0].replace(labeldata[0],&apos;pedestrian&apos;)</span><br><span class="line">                if labeldata[0] == &apos;Cyclist&apos;: # 合并行人类</span><br><span class="line">                    continue</span><br><span class="line">                #    labeldata[0] = labeldata[0].replace(labeldata[0],&apos;cyclist&apos;)</span><br><span class="line">                if labeldata[0] == &apos;DontCare&apos;: # 忽略Dontcare类</span><br><span class="line">                    continue</span><br><span class="line">                if labeldata[0] == &apos;Misc&apos;: # 忽略Misc类</span><br><span class="line">                    continue</span><br><span class="line">                new_txt.append(merge(labeldata)) # 重新写入新的txt文件</span><br><span class="line">        with open(item,&apos;w+&apos;) as w_tdf: # w+是打开原文件将内容删除，另写新内容进去</span><br><span class="line">            for temp in new_txt:</span><br><span class="line">                w_tdf.write(temp)</span><br><span class="line">    except IOError as ioerr:</span><br><span class="line">        print(&apos;File error:&apos;+str(ioerr))</span><br><span class="line"></span><br><span class="line">print(&apos;\nafter modify categories are:\n&apos;)</span><br><span class="line">show_category(txt_list)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br></pre></td><td class="code"><pre><span class="line"># txt_to_xml.py</span><br><span class="line"># encoding:utf-8</span><br><span class="line"># 根据一个给定的XML Schema，使用DOM树的形式从空白文件生成一个XML</span><br><span class="line">from xml.dom.minidom import Document</span><br><span class="line">import cv2</span><br><span class="line">import os</span><br><span class="line">import math</span><br><span class="line"></span><br><span class="line">def generate_xml(name,split_lines,img_size,class_ind):</span><br><span class="line">    doc = Document()  # 创建DOM文档对象</span><br><span class="line"></span><br><span class="line">    annotation = doc.createElement(&apos;annotation&apos;)</span><br><span class="line">    doc.appendChild(annotation)</span><br><span class="line"></span><br><span class="line">    title = doc.createElement(&apos;folder&apos;)</span><br><span class="line">    title_text = doc.createTextNode(&apos;VOC2007&apos;)#KITTI</span><br><span class="line">    title.appendChild(title_text)</span><br><span class="line">    annotation.appendChild(title)</span><br><span class="line"></span><br><span class="line">    img_name=name+&apos;.png&apos;</span><br><span class="line"></span><br><span class="line">    title = doc.createElement(&apos;filename&apos;)</span><br><span class="line">    title_text = doc.createTextNode(img_name)</span><br><span class="line">    title.appendChild(title_text)</span><br><span class="line">    annotation.appendChild(title)</span><br><span class="line"></span><br><span class="line">    source = doc.createElement(&apos;source&apos;)</span><br><span class="line">    annotation.appendChild(source)</span><br><span class="line"></span><br><span class="line">    title = doc.createElement(&apos;database&apos;)</span><br><span class="line">    title_text = doc.createTextNode(&apos;The KITTI Database&apos;)</span><br><span class="line">    title.appendChild(title_text)</span><br><span class="line">    source.appendChild(title)</span><br><span class="line"></span><br><span class="line">    title = doc.createElement(&apos;annotation&apos;)</span><br><span class="line">    title_text = doc.createTextNode(&apos;KITTI&apos;)</span><br><span class="line">    title.appendChild(title_text)</span><br><span class="line">    source.appendChild(title)</span><br><span class="line"></span><br><span class="line">    size = doc.createElement(&apos;size&apos;)</span><br><span class="line">    annotation.appendChild(size)</span><br><span class="line"></span><br><span class="line">    title = doc.createElement(&apos;width&apos;)</span><br><span class="line">    title_text = doc.createTextNode(str(img_size[1]))</span><br><span class="line">    title.appendChild(title_text)</span><br><span class="line">    size.appendChild(title)</span><br><span class="line"></span><br><span class="line">    title = doc.createElement(&apos;height&apos;)</span><br><span class="line">    title_text = doc.createTextNode(str(img_size[0]))</span><br><span class="line">    title.appendChild(title_text)</span><br><span class="line">    size.appendChild(title)</span><br><span class="line"></span><br><span class="line">    title = doc.createElement(&apos;depth&apos;)</span><br><span class="line">    title_text = doc.createTextNode(str(img_size[2]))</span><br><span class="line">    title.appendChild(title_text)</span><br><span class="line">    size.appendChild(title)</span><br><span class="line"></span><br><span class="line">    for split_line in split_lines:</span><br><span class="line">        line=split_line.strip().split()</span><br><span class="line">        if line[0] in class_ind:</span><br><span class="line">            object = doc.createElement(&apos;object&apos;)</span><br><span class="line">            annotation.appendChild(object)</span><br><span class="line"></span><br><span class="line">            title = doc.createElement(&apos;name&apos;)</span><br><span class="line">            title_text = doc.createTextNode(line[0])</span><br><span class="line">            title.appendChild(title_text)</span><br><span class="line">            object.appendChild(title)</span><br><span class="line"></span><br><span class="line">            bndbox = doc.createElement(&apos;bndbox&apos;)</span><br><span class="line">            object.appendChild(bndbox)</span><br><span class="line">            title = doc.createElement(&apos;xmin&apos;)</span><br><span class="line">            title_text = doc.createTextNode(str(int(float(line[4]))))</span><br><span class="line">            title.appendChild(title_text)</span><br><span class="line">            bndbox.appendChild(title)</span><br><span class="line">            title = doc.createElement(&apos;ymin&apos;)</span><br><span class="line">            title_text = doc.createTextNode(str(int(float(line[5]))))</span><br><span class="line">            title.appendChild(title_text)</span><br><span class="line">            bndbox.appendChild(title)</span><br><span class="line">            title = doc.createElement(&apos;xmax&apos;)</span><br><span class="line">            title_text = doc.createTextNode(str(int(float(line[6]))))</span><br><span class="line">            title.appendChild(title_text)</span><br><span class="line">            bndbox.appendChild(title)</span><br><span class="line">            title = doc.createElement(&apos;ymax&apos;)</span><br><span class="line">            title_text = doc.createTextNode(str(int(float(line[7]))))</span><br><span class="line">            title.appendChild(title_text)</span><br><span class="line">            bndbox.appendChild(title)</span><br><span class="line"></span><br><span class="line">            orient = doc.createElement(&apos;orient&apos;)</span><br><span class="line">            title_text = doc.createTextNode(line[3])</span><br><span class="line">            orient.appendChild(title_text)</span><br><span class="line">            object.appendChild(orient)</span><br><span class="line"></span><br><span class="line">    # 将DOM对象doc写入文件</span><br><span class="line">    f = open(&apos;Annotations/&apos;+name+&apos;.xml&apos;,&apos;w&apos;)</span><br><span class="line">    f.write(doc.toprettyxml(indent = &apos;&apos;))</span><br><span class="line">    f.close()</span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    class_ind=(&apos;car&apos;)#, &apos;pedestrian&apos;, &apos;cyclist&apos;)</span><br><span class="line">    cur_dir=os.getcwd()</span><br><span class="line">    labels_dir=os.path.join(cur_dir,&apos;Labels&apos;)</span><br><span class="line">    for parent, dirnames, filenames in os.walk(labels_dir): # 分别得到根目录，子目录和根目录下文件   </span><br><span class="line">        for file_name in filenames:</span><br><span class="line">            full_path=os.path.join(parent, file_name) # 获取文件全路径</span><br><span class="line">            f=open(full_path)</span><br><span class="line">            split_lines = f.readlines()</span><br><span class="line">            name= file_name[:-4] # 后四位是扩展名.txt，只取前面的文件名</span><br><span class="line">            img_name=name+&apos;.png&apos; </span><br><span class="line">            img_path=os.path.join(&apos;/home/inin/catkin_ws/src/idr_vehdet/py-faster-rcnn/data/VOCdevkit2007/VOC2007/JPEGImages&apos;,img_name) # 路径需要自行修改            </span><br><span class="line">            img_size=cv2.imread(img_path).shape</span><br><span class="line">            generate_xml(name,split_lines,img_size,class_ind)</span><br><span class="line">print(&apos;all txts has converted into xmls&apos;)</span><br></pre></td></tr></table></figure>
+<h1 id="代码修改"><a href="#代码修改" class="headerlink" title="代码修改"></a>代码修改</h1><p>我使用的是faster_rcnn_end2end.sh进行训练。需要调整的文件有：</p>
+<ol>
+<li><p>./lib/datasets/pascal_voc.py</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"># line 30</span><br><span class="line">self._classes = (&apos;__background__&apos;, &apos;car&apos;) # always index 0</span><br><span class="line">                 #&apos;aeroplane&apos;, &apos;bicycle&apos;, &apos;bird&apos;, &apos;boat&apos;,</span><br><span class="line">                 #&apos;bottle&apos;, &apos;bus&apos;, &apos;car&apos;, &apos;cat&apos;, &apos;chair&apos;,</span><br><span class="line">                 #&apos;cow&apos;, &apos;diningtable&apos;, &apos;dog&apos;, &apos;horse&apos;,</span><br><span class="line">                 #&apos;motorbike&apos;, &apos;person&apos;, &apos;pottedplant&apos;,</span><br><span class="line">                 #&apos;sheep&apos;, &apos;sofa&apos;, &apos;train&apos;, &apos;tvmonitor&apos;)</span><br><span class="line"></span><br><span class="line"># line 188-195 全部注释掉</span><br><span class="line">#if not self.config[&apos;use_diff&apos;]:</span><br><span class="line">    # Exclude the samples labeled as difficult</span><br><span class="line">#    non_diff_objs = [</span><br><span class="line">#        obj for obj in objs if int(obj.find(&apos;difficult&apos;).text) == 0]</span><br><span class="line">    # if len(non_diff_objs) != len(objs):</span><br><span class="line">    #     print &apos;Removed &#123;&#125; difficult objects&apos;.format(</span><br><span class="line">    #         len(objs) - len(non_diff_objs))</span><br><span class="line">#    objs = non_diff_objs</span><br><span class="line"></span><br><span class="line"># line 208</span><br><span class="line">x1 = float(bbox.find(&apos;xmin&apos;).text) #- 1</span><br><span class="line">y1 = float(bbox.find(&apos;ymin&apos;).text) #- 1</span><br><span class="line">x2 = float(bbox.find(&apos;xmax&apos;).text) #- 1</span><br><span class="line">y2 = float(bbox.find(&apos;ymax&apos;).text) #- 1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>./lib/datasets/imdb.py</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"># line 102</span><br><span class="line">def append_flipped_images(self): #modfied</span><br><span class="line">    num_images = self.num_images</span><br><span class="line">    #widths = self._get_widths()</span><br><span class="line">    widths = [PIL.Image.open(self.image_path_at(i)).size[0] for i in xrange(num_images)]</span><br><span class="line">    for i in xrange(num_images):</span><br><span class="line">        boxes = self.roidb[i][&apos;boxes&apos;].copy()</span><br><span class="line">        oldx1 = boxes[:, 0].copy()</span><br><span class="line">        oldx2 = boxes[:, 2].copy()</span><br><span class="line">        boxes[:, 0] = widths[i] - oldx2 - 1</span><br><span class="line">        print boxes[:, 0]</span><br><span class="line">        boxes[:, 2] = widths[i] - oldx1 - 1</span><br><span class="line">        print boxes[:, 0]</span><br><span class="line">        assert (boxes[:, 2] &gt;= boxes[:, 0]).all()</span><br><span class="line">        entry = &#123;&apos;boxes&apos; : boxes,</span><br><span class="line">                 &apos;gt_overlaps&apos; : self.roidb[i][&apos;gt_overlaps&apos;],</span><br><span class="line">                 &apos;gt_classes&apos; : self.roidb[i][&apos;gt_classes&apos;],</span><br><span class="line">                 &apos;flipped&apos; : True&#125;</span><br><span class="line">        self.roidb.append(entry)</span><br><span class="line">    self._image_index = self._image_index * 2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>./models/pascal_voc/VGG_CNN_M_1024/faster_rcnn_end2end/train.protxt<br>修改类别为你需要检测类别数目，例如我检测车辆和背景，则将类别数21改为2</p>
+</li>
+<li>./models/pascal_voc/VGG_CNN_M_1024/faster_rcnn_end2end/test.protxt<br>修改类别为你需要检测类别数目，例如我检测车辆和背景，则将类别数21改为2</li>
+<li>./experiments/scripts/faster_rcnn_end2end.sh<br>修改line 53的finetune模型</li>
+</ol>
+<h1 id="开始训练"><a href="#开始训练" class="headerlink" title="开始训练"></a>开始训练</h1><p>所有准备工作就绪，可以开始训练了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./experiments/scripts/faster_rcnn_end2end.sh 0 VGG_CNN_M_1024 pascal_voc</span><br></pre></td></tr></table></figure></p>
+<p>训练结果在./output文件夹中，可直接使用。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/25/class-derived-and-ptrs/" rel="next" title="C++继承中的指针问题">
+                <i class="fa fa-chevron-left"></i> C++继承中的指针问题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/20/orientation-net/" rel="prev" title="基于CaffeNet完成的一个车辆朝向检测网络">
+                基于CaffeNet完成的一个车辆朝向检测网络 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://raw.githubusercontent.com/Leooo48/markdownimages/master/1731554065.jpg" alt="李浩 Leo">
+            
+              <p class="site-author-name" itemprop="name">李浩 Leo</p>
+              <p class="site-description motion-element" itemprop="description">身处安乐之时，莫忘昔日之痛</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#环境"><span class="nav-text">环境</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编译"><span class="nav-text">编译</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用demo-py测试代码是否正常"><span class="nav-text">用demo.py测试代码是否正常</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#训练自己的数据集"><span class="nav-text">训练自己的数据集</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码修改"><span class="nav-text">代码修改</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#开始训练"><span class="nav-text">开始训练</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2016 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">李浩 Leo</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
